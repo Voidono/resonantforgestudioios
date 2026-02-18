@@ -1,6 +1,11 @@
+import { useState } from "react";
 import heroGradient from "@/assets/hero-gradient.jpg";
 import GearLogo from "@/components/GearLogo";
 import Footer from "@/components/Footer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 
 const notList = [
   "A traditional game publisher.",
@@ -11,6 +16,19 @@ const notList = [
 ];
 
 const Index = () => {
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = () => {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    toast.success("You're subscribed! We'll keep you posted.");
+    setEmail("");
+    setSubscribeOpen(false);
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -26,7 +44,10 @@ const Index = () => {
           <p className="font-serif italic text-primary-foreground/80 text-lg mb-10 leading-relaxed">
             A studio exploring games and systems<br />without coercive monetization.
           </p>
-          <button className="w-full max-w-xs mx-auto block border-2 border-primary-foreground/40 text-primary-foreground px-8 py-3 text-sm tracking-[0.2em] uppercase hover:bg-primary-foreground/10 transition-colors mb-4">
+          <button
+            onClick={() => setSubscribeOpen(true)}
+            className="w-full max-w-xs mx-auto block border-2 border-primary-foreground/40 text-primary-foreground px-8 py-3 text-sm tracking-[0.2em] uppercase hover:bg-primary-foreground/10 transition-colors mb-4"
+          >
             Subscribe
           </button>
           <button className="w-full max-w-xs mx-auto block bg-primary-foreground/20 text-primary-foreground px-8 py-3 text-sm tracking-[0.15em] uppercase hover:bg-primary-foreground/30 transition-colors backdrop-blur-sm">
@@ -68,6 +89,25 @@ const Index = () => {
       </section>
 
       <Footer />
+
+      <Dialog open={subscribeOpen} onOpenChange={setSubscribeOpen}>
+        <DialogContent className="bg-background border-border">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-xl">Subscribe</DialogTitle>
+            <DialogDescription>Enter your email to get updates from Resonant Forge Studios.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-2">
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
+            />
+            <Button onClick={handleSubscribe}>Subscribe</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
