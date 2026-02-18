@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Index from "./pages/Index";
 import Principles from "./pages/Principles";
 import FAQ from "./pages/FAQ";
+import Transaction from "./pages/Transaction";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/principles" element={<Principles />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/transaction" element={<Transaction />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
