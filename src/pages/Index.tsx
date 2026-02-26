@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import heroGradient from "@/assets/hero-gradient.jpg";
-import GearLogo from "@/components/GearLogo";
+import studioLogo from "@/assets/studio-logo.png";
 import Footer from "@/components/Footer";
 
 const notList = [

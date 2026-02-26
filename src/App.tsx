@@ -11,6 +11,7 @@ import FAQ from "./pages/FAQ";
 import Transaction from "./pages/Transaction";
 import Auth from "./pages/Auth";
 import Vote from "./pages/Vote";
+import Vessel from "./pages/Vessel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
