@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import heroGradient from "@/assets/hero-gradient.jpg";
-import GearLogo from "@/components/GearLogo";
+import studioLogo from "@/assets/studio-logo.png";
 import Footer from "@/components/Footer";
 
 const notList = [
@@ -22,7 +22,7 @@ const Index = () => {
         style={{ backgroundImage: `url(${heroGradient})` }}
       >
         <div className="relative z-10 max-w-md mx-auto">
-          <GearLogo className="w-16 h-16 mx-auto mb-8 text-primary-foreground/80" />
+          <img src={studioLogo} alt="Resonant Forge Studios" className="w-20 h-20 mx-auto mb-8 object-contain" />
           <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-wide leading-tight text-primary-foreground mb-6">
             RESONANT<br />FORGE STUDIOS
           </h1>
