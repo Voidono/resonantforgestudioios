@@ -14,7 +14,7 @@ const Navbar = () => {
       {/* Desktop top nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-3 hidden md:flex items-center justify-between bg-background/90 backdrop-blur-md border-b border-border">
         <Link to="/" className="flex items-center gap-2">
-          <img src={studioLogo} alt="Resonant Forge Studios" className="h-10 w-auto" />
+          <img src={studioLogo} alt="Resonant Forge Studios" className="h-14 w-auto" />
         </Link>
         <div className="flex gap-6 text-sm tracking-wide items-center">
           <Link to="/principles" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -41,7 +41,7 @@ const Navbar = () => {
       {/* Mobile top bar */}
       <div className="fixed top-0 left-0 right-0 z-50 px-4 py-3 flex md:hidden items-center justify-center bg-background/90 backdrop-blur-md border-b border-border">
         <Link to="/" className="flex items-center gap-2">
-          <img src={studioLogo} alt="Resonant Forge Studios" className="h-7 w-auto" />
+          <img src={studioLogo} alt="Resonant Forge Studios" className="h-10 w-auto" />
         </Link>
       </div>
 

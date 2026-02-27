@@ -22,7 +22,7 @@ const Index = () => {
         style={{ backgroundImage: `url(${heroGradient})` }}
       >
         <div className="relative z-10 max-w-md mx-auto">
-          <img src={studioLogo} alt="Resonant Forge Studios" className="w-20 h-20 mx-auto mb-8 object-contain" />
+          <img src={studioLogo} alt="Resonant Forge Studios" className="w-28 h-28 mx-auto mb-8 object-contain" />
           <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-wide leading-tight text-primary-foreground mb-6">
             RESONANT<br />FORGE STUDIOS
           </h1>
