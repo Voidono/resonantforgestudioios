@@ -5,7 +5,6 @@ import studioLogo from "@/assets/studio-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
-  const isHero = location.pathname === "/";
   const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
