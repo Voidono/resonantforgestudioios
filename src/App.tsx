@@ -12,6 +12,7 @@ import Transaction from "./pages/Transaction";
 import Auth from "./pages/Auth";
 import Vote from "./pages/Vote";
 import Vessel from "./pages/Vessel";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/principles" element={<Principles />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/transaction" element={<Transaction />} />
