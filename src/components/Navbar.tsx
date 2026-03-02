@@ -27,9 +27,14 @@ const Navbar = () => {
             FAQ
           </Link>
           {user ? (
-            <Link to="/vote" className="text-copper hover:text-copper/80 transition-colors font-medium">
-              Vote
-            </Link>
+            <>
+              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+              <Link to="/vote" className="text-copper hover:text-copper/80 transition-colors font-medium">
+                Vote
+              </Link>
+            </>
           ) : (
             <Link to="/auth" className="text-copper hover:text-copper/80 transition-colors font-medium">
               Sign In
