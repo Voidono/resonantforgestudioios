@@ -12,6 +12,7 @@ import Transaction from "./pages/Transaction";
 import Auth from "./pages/Auth";
 import Vote from "./pages/Vote";
 import Vessel from "./pages/Vessel";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
