@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import Vote from "./pages/Vote";
 import Vessel from "./pages/Vessel";
 import Dashboard from "./pages/Dashboard";
+import AssetProduction from "./pages/AssetProduction";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/principles" element={<Principles />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/transaction" element={<Transaction />} />
+            <Route path="/asset-production" element={<AssetProduction />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />
