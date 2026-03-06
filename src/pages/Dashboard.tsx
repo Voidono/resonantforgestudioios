@@ -8,30 +8,30 @@ const cards = [
     icon: Settings,
     title: "BUSINESS",
     description:
-      "Scalable strategic infrastructure and frameworks built for high-throughput industrial deployment and growth.",
+      "Studio infrastructure and operating systems designed to make the B2B side of game development more honest, legible, and enforceable.",
     status: "OP_STATUS: NOMINAL",
     action: "INITIALIZE WORKSPACE",
     route: "/transaction",
   },
   {
     number: "02",
-    icon: Users,
-    title: "COMMUNITY",
-    description:
-      "Decentralized culture nodes where production feedback loops undergo high-temperature industrial refinement.",
-    status: "NET_SYNC: ACTIVE",
-    action: "ACCESS NEXUS",
-    route: "/vote",
-  },
-  {
-    number: "03",
     icon: LayoutGrid,
     title: "DEVELOPERS",
     description:
-      "Direct low-level technical access. Engine-grade documentation and precision toolsets for core integration.",
+      "A mutually visible network of developers we support and who choose to stand behind the studio through shared standards and work.",
     status: "CORE_AUTH: GRANTED",
     action: "FORGE INTEGRATION",
     route: "/vessel",
+  },
+  {
+    number: "03",
+    icon: Users,
+    title: "COMMUNITY",
+    description:
+      "Where our games take shape in the open. Sharing progress, art, and direction as the studio builds. Decisions made collectively are documented, showing the path chosen.",
+    status: "NET_SYNC: ACTIVE",
+    action: "ACCESS NEXUS",
+    route: "/vote",
   },
 ];
 
@@ -66,8 +66,33 @@ const Dashboard = () => {
           <span className="w-4 h-4 rounded-sm bg-copper/30 flex items-center justify-center">
             <span className="block w-2 h-2 rounded-sm bg-copper" />
           </span>
-          REF_004_AMBER_GLOW.MAP
+          REF_005_UPDATED_DESCR.MAP
         </button>
+      </section>
+
+      {/* Our Goal */}
+      <section className="px-4 md:px-6 pb-12 max-w-4xl mx-auto">
+        <div className="border border-border rounded-lg bg-card/60 backdrop-blur-sm p-8 md:p-12 text-center relative">
+          {/* Corner dots */}
+          <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+          <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+          <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+          <div className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+
+          <h2 className="text-2xl md:text-3xl font-serif font-bold tracking-wider text-foreground mb-2">
+            OUR GOAL
+          </h2>
+          <div className="h-0.5 w-10 mx-auto mb-6" style={{ backgroundColor: "hsl(var(--copper))" }} />
+          <p className="text-muted-foreground font-sans leading-relaxed max-w-2xl mx-auto mb-8">
+            To build a studio that makes creative, technical, and business decisions explicit, accountable, and structurally sound as they scale.
+          </p>
+          <button
+            onClick={() => navigate("/principles")}
+            className="px-8 py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium border border-border hover:border-copper/40 text-foreground rounded transition-colors"
+          >
+            VIEW STUDIO MISSION
+          </button>
+        </div>
       </section>
 
       {/* Cards Grid */}
