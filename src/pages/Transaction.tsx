@@ -1,84 +1,71 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
-import { Check, ArrowRight, Briefcase, TrendingUp, Shield, Zap, FileText, Users } from "lucide-react";
+import { ArrowLeft, Box, TrendingUp, Paintbrush, Brain } from "lucide-react";
 
-const plans = [
+const subsystems = [
   {
-    name: "Observer",
-    price: "Free",
-    period: "",
-    description: "Follow our journey and stay informed.",
-    features: [
-      "Public devlogs & updates",
-      "Community forum access",
-      "Monthly newsletter",
-    ],
-    cta: "Join Free",
-    highlight: false,
+    id: "01",
+    icon: Box,
+    title: "FRAMEWORKS",
+    status: "IN PROGRESS",
+    statusColor: "hsl(var(--copper))",
+    statusBg: "hsl(var(--copper) / 0.15)",
+    description:
+      "Proprietary architectural foundations optimized for large-scale immersive environments and distributed simulation logic. Designed for extreme concurrency and low-latency state synchronization.",
+    metric: "SYNC LATENCY",
+    metricValue: "33% OPTIMIZED",
+    metricProgress: 33,
+    metricColor: "hsl(var(--copper))",
+    route: null,
+    dotColor: "hsl(var(--copper))",
   },
   {
-    name: "Supporter",
-    price: "$9",
-    period: "/month",
-    description: "Back the mission and get early access.",
-    features: [
-      "Everything in Observer",
-      "Early access to prototypes",
-      "Vote on design proposals",
-      "Supporter-only Discord channels",
-      "Name in credits",
-    ],
-    cta: "Subscribe",
-    highlight: true,
-  },
-  {
-    name: "Founding Member",
-    price: "$25",
-    period: "/month",
-    description: "Shape the studio from the ground up.",
-    features: [
-      "Everything in Supporter",
-      "Priority proposal submissions",
-      "Monthly Q&A sessions",
-      "Behind-the-scenes builds",
-      "Founding member badge",
-      "Direct feedback channel",
-    ],
-    cta: "Subscribe",
-    highlight: false,
-  },
-];
-
-const capabilities = [
-  {
+    id: "02",
     icon: TrendingUp,
-    title: "GROWTH PIPELINE",
-    description: "Scalable revenue models designed for sustainable studio expansion and long-term viability.",
+    title: "SYSTEMS ANALYSIS",
+    status: "LIVE",
+    statusColor: "#22c55e",
+    statusBg: "rgba(34, 197, 94, 0.15)",
+    description:
+      "Evaluative auditing and infrastructure design for external partner studios. We optimize technical pipelines, resolve debt, and architect scalable production structures for high-performance releases.",
+    metric: "LOAD BALANCE",
+    metricValue: "25% CAPACITY",
+    metricProgress: 25,
+    metricColor: "#22c55e",
+    route: null,
+    dotColor: "#22c55e",
   },
   {
-    icon: Shield,
-    title: "TRANSPARENCY CORE",
-    description: "Open financial reporting and decision logs. Every dollar traced, every choice documented.",
+    id: "03",
+    icon: Paintbrush,
+    title: "ASSET PRODUCTION",
+    status: "LIVE",
+    statusColor: "#22c55e",
+    statusBg: "rgba(34, 197, 94, 0.15)",
+    description:
+      "A high-fidelity production pipeline for mission-critical visual and logic assets. Requests are scoped and executed through a rigorous internal flow, ensuring consistent quality and technical integration.",
+    metric: "OUTPUT RATE",
+    metricValue: "50% CAPACITY",
+    metricProgress: 50,
+    metricColor: "hsl(var(--copper))",
+    route: "/asset-production",
+    dotColor: "#22c55e",
   },
   {
-    icon: Zap,
-    title: "RAPID DEPLOYMENT",
-    description: "Streamlined production cycles from concept to delivery with industrial-grade tooling.",
-  },
-  {
-    icon: FileText,
-    title: "SMART CONTRACTS",
-    description: "Clear, fair agreements for contributors, collaborators, and community stakeholders.",
-  },
-  {
-    icon: Users,
-    title: "PARTNER NETWORK",
-    description: "Curated ecosystem of aligned studios, creators, and service providers.",
-  },
-  {
-    icon: Briefcase,
-    title: "ASSET MANAGEMENT",
-    description: "Centralized resource allocation and project budgeting with real-time oversight.",
+    id: "04",
+    icon: Brain,
+    title: "NLR RESEARCH",
+    status: "PENDING",
+    statusColor: "#ef4444",
+    statusBg: "rgba(239, 68, 68, 0.15)",
+    description:
+      "R&D focus on non-linear responsiveness and perceptual stability within real-time systems. Investigating low-latency orchestration and autonomic system behavior under high-stress constraints.",
+    metric: "QUEUE LOAD",
+    metricValue: "OFFLINE",
+    metricProgress: 0,
+    metricColor: "#ef4444",
+    route: null,
+    dotColor: "#ef4444",
   },
 ];
 
@@ -86,180 +73,125 @@ const Transaction = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="pt-28 md:pt-32 pb-16 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-10 bg-copper/50" />
-            <p className="text-xs tracking-[0.3em] uppercase font-sans" style={{ color: "hsl(var(--copper))" }}>
-              MODULE 01 // BUSINESS OPERATIONS
-            </p>
-          </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top gradient line */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent mt-[72px]" />
 
-          <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-wide text-foreground mb-4">
-            THE FORGE<br />
-            <span style={{ color: "hsl(var(--copper))" }}>ECONOMY</span>
-          </h1>
-          <p className="text-muted-foreground max-w-xl leading-relaxed text-lg mb-8">
-            Scalable strategic infrastructure built for transparent, community-backed game development. Fund the mission. Shape the output.
-          </p>
+      {/* Content */}
+      <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full">
+        {/* Back button */}
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2 text-copper text-xs tracking-[0.15em] uppercase font-sans font-medium mb-10 hover:opacity-80 transition-opacity"
+          style={{ color: "hsl(var(--copper))" }}
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
 
-          <div className="flex items-center gap-4">
-            <a
-              href="#plans"
-              className="inline-flex items-center gap-2 px-6 py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium rounded transition-colors"
-              style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
+        {/* Subsystem Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {subsystems.map((sys) => (
+            <div
+              key={sys.id}
+              className={`relative border border-border rounded-lg bg-card/40 p-6 md:p-8 flex flex-col justify-between min-h-[280px] transition-all duration-300 ${
+                sys.route ? "cursor-pointer hover:border-copper/40" : ""
+              }`}
+              onClick={() => sys.route && navigate(sys.route)}
             >
-              View Plans
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="px-6 py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium border border-border rounded text-muted-foreground hover:text-foreground hover:border-copper/40 transition-colors"
-            >
-              Back to Dashboard
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Capabilities Grid */}
-      <section className="px-6 pb-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--copper))" }} />
-            <span className="text-[10px] tracking-[0.25em] uppercase font-sans font-medium" style={{ color: "hsl(var(--copper))" }}>
-              OPERATIONAL CAPABILITIES
-            </span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {capabilities.map((cap) => (
+              {/* Status dot top-right */}
               <div
-                key={cap.title}
-                className="group border border-border rounded-lg p-6 bg-card/40 hover:border-copper/30 transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-md bg-secondary flex items-center justify-center shrink-0 group-hover:bg-copper/10 transition-colors">
-                    <cap.icon className="w-5 h-5 text-muted-foreground group-hover:text-copper transition-colors" style={{}} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-sans font-semibold tracking-[0.1em] text-foreground mb-1">
-                      {cap.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {cap.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: sys.dotColor }}
+              />
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="h-px bg-border" />
-      </div>
-
-      {/* Plans */}
-      <section id="plans" className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-10 bg-copper/50" />
-              <p className="text-xs tracking-[0.3em] uppercase font-sans" style={{ color: "hsl(var(--copper))" }}>
-                INVESTMENT TIERS
-              </p>
-              <div className="h-px w-10 bg-copper/50" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-wide text-foreground mb-3">
-              Choose Your Path
-            </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Support ethical game development. Every tier funds our work and gives you a voice in how we build.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-lg border p-8 flex flex-col transition-all ${
-                  plan.highlight
-                    ? "border-copper bg-copper/5 shadow-[0_0_30px_-10px_hsl(var(--copper)/0.3)]"
-                    : "border-border bg-secondary/30"
-                }`}
-              >
-                {/* Corner dots */}
-                <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                <div className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-
-                {plan.highlight && (
-                  <span
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-sans font-medium tracking-widest uppercase px-4 py-1 rounded-full"
-                    style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
-                  >
-                    Recommended
-                  </span>
-                )}
-                <h2 className="font-serif text-xl font-semibold text-foreground mb-2">
-                  {plan.name}
-                </h2>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-3xl font-serif font-bold text-foreground">
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span className="text-muted-foreground text-sm">{plan.period}</span>
-                  )}
-                </div>
-                <div className="h-0.5 w-8 mb-4" style={{ backgroundColor: "hsl(var(--copper))" }} />
-                <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                  {plan.description}
-                </p>
-                <ul className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-3 text-sm text-foreground/80">
-                      <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "hsl(var(--copper))" }} />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  className={`w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium transition-colors rounded ${
-                    plan.highlight
-                      ? "text-background hover:opacity-90"
-                      : "border border-border text-foreground hover:bg-secondary"
-                  }`}
-                  style={plan.highlight ? { backgroundColor: "hsl(var(--copper))" } : {}}
+              <div>
+                {/* Icon */}
+                <div
+                  className="w-10 h-10 rounded-md flex items-center justify-center mb-5"
+                  style={{ backgroundColor: "hsl(var(--copper) / 0.12)" }}
                 >
-                  {plan.cta}
-                </button>
+                  <sys.icon className="w-5 h-5" style={{ color: "hsl(var(--copper))" }} />
+                </div>
+
+                {/* Subsystem label */}
+                <p
+                  className="text-[10px] tracking-[0.2em] uppercase font-sans font-medium mb-2"
+                  style={{ color: "hsl(var(--copper))" }}
+                >
+                  SUBSYSTEM_{sys.id}
+                </p>
+
+                {/* Title + status */}
+                <div className="flex items-center gap-3 mb-4">
+                  <h2 className="text-lg md:text-xl font-serif font-bold tracking-wider text-foreground">
+                    {sys.title}
+                  </h2>
+                  <span
+                    className="text-[9px] tracking-[0.15em] uppercase font-sans font-semibold px-2.5 py-0.5 rounded border"
+                    style={{
+                      color: sys.statusColor,
+                      borderColor: sys.statusColor,
+                      backgroundColor: sys.statusBg,
+                    }}
+                  >
+                    {sys.status}
+                  </span>
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground leading-relaxed font-sans">
+                  {sys.description}
+                </p>
               </div>
-            ))}
-          </div>
+
+              {/* Bottom metric bar */}
+              <div className="mt-6 pt-4 border-t border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-medium text-muted-foreground">
+                    {sys.metric}
+                  </span>
+                  <span
+                    className="text-[10px] tracking-[0.15em] uppercase font-sans font-semibold"
+                    style={{ color: sys.metricColor }}
+                  >
+                    {sys.metricValue}
+                  </span>
+                </div>
+                <div className="w-full h-1 rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${sys.metricProgress}%`,
+                      backgroundColor: sys.metricColor,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Bottom status */}
-      <section className="px-6 pb-6 max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-[10px] tracking-[0.2em] uppercase font-sans">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--copper))" }} />
-            <span style={{ color: "hsl(var(--copper))" }}>OP_STATUS: NOMINAL</span>
+      {/* Bottom status bar */}
+      <section className="px-6 py-4 border-t border-border">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 text-[10px] tracking-[0.15em] uppercase font-sans">
+          <div className="flex items-center gap-6">
+            <span className="text-muted-foreground">
+              THERMAL LOAD: <span style={{ color: "hsl(var(--copper))" }}>42°C</span>
+            </span>
+            <span className="text-muted-foreground">
+              CORE FREQUENCY: <span style={{ color: "hsl(var(--copper))" }}>4.8 GHz</span>
+            </span>
+            <span className="text-muted-foreground">
+              BUFFER STATUS: <span className="text-green-500">STABLE</span>
+            </span>
           </div>
-          <div className="hidden md:block h-4 w-px bg-border" />
-          <span className="text-muted-foreground">MODULE: BUSINESS // ACTIVE</span>
+          <span className="text-muted-foreground">
+            © 2024 RESONANT FORGE STUDIOS (RFS) // CORE_SUBSYSTEMS_HUB // INFRA_V2.1.0
+          </span>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };
