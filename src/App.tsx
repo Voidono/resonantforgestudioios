@@ -16,6 +16,9 @@ import Dashboard from "./pages/Dashboard";
 import AssetProduction from "./pages/AssetProduction";
 import AssetClassification from "./pages/AssetClassification";
 import AssetIntake from "./pages/AssetIntake";
+import SubmissionConfirmation from "./pages/SubmissionConfirmation";
+import OperationsHub from "./pages/OperationsHub";
+import ContactTerminal from "./pages/ContactTerminal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +40,9 @@ const App = () => (
             <Route path="/asset-production" element={<AssetProduction />} />
             <Route path="/asset-classification" element={<AssetClassification />} />
             <Route path="/asset-intake" element={<AssetIntake />} />
+            <Route path="/submission-confirmation" element={<SubmissionConfirmation />} />
+            <Route path="/operations-hub" element={<OperationsHub />} />
+            <Route path="/contact-terminal" element={<ContactTerminal />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />

@@ -32,7 +32,7 @@ const AssetIntake = () => {
       navigate("/auth");
       return;
     }
-    // Future: submit intake data
+    navigate("/submission-confirmation");
   };
 
   return (
