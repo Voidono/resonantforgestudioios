@@ -209,6 +209,7 @@ const AssetProduction = () => {
           <div className="lg:col-span-2 flex flex-col justify-end gap-6">
             {/* CTA Button */}
             <button
+              onClick={() => navigate("/asset-classification")}
               className="w-full py-5 rounded-lg text-sm md:text-base tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90"
               style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
             >
