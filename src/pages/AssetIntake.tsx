@@ -32,7 +32,7 @@ const AssetIntake = () => {
       navigate("/auth");
       return;
     }
-    // Future: submit intake data
+    navigate("/submission-confirmation");
   };
 
   return (
@@ -59,22 +59,30 @@ const AssetIntake = () => {
 
           <div className="flex items-center gap-8">
             {[
-              { icon: PlusSquare, label: "INTAKE", active: true },
-              { icon: FolderOpen, label: "ASSETS", active: false },
-              { icon: AtSign, label: "CONTACT", active: false },
+              { icon: PlusSquare, label: "INTAKE", active: true, path: "/asset-intake" },
+              { icon: FolderOpen, label: "ASSETS", active: false, path: "/operations-hub" },
+              { icon: AtSign, label: "CONTACT", active: false, path: "/contact-terminal" },
             ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center gap-1">
+              <button
+                key={item.label}
+                onClick={() => navigate(item.path)}
+                className="flex flex-col items-center gap-1"
+              >
                 <item.icon
                   className="w-4 h-4"
                   style={{ color: item.active ? "hsl(var(--copper))" : undefined }}
                 />
                 <span
                   className="text-[9px] tracking-[0.1em] uppercase font-sans font-medium"
-                  style={{ color: item.active ? "hsl(var(--copper))" : undefined }}
+                  style={{
+                    color: item.active ? "hsl(var(--copper))" : undefined,
+                    borderBottom: item.active ? "2px solid hsl(var(--copper))" : "none",
+                    paddingBottom: "2px",
+                  }}
                 >
                   {item.label}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
 
