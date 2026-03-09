@@ -15,6 +15,8 @@ import Vessel from "./pages/Vessel";
 import Dashboard from "./pages/Dashboard";
 import AssetProduction from "./pages/AssetProduction";
 import AssetClassification from "./pages/AssetClassification";
+import DeveloperHub from "./pages/DeveloperHub";
+import DeveloperRoster from "./pages/DeveloperRoster";
 import AssetIntake from "./pages/AssetIntake";
 import SubmissionConfirmation from "./pages/SubmissionConfirmation";
 import OperationsHub from "./pages/OperationsHub";
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/transaction" element={<Transaction />} />
             <Route path="/asset-production" element={<AssetProduction />} />
+            <Route path="/developer-hub" element={<DeveloperHub />} />
+            <Route path="/developer-roster" element={<DeveloperRoster />} />
             <Route path="/asset-classification" element={<AssetClassification />} />
             <Route path="/asset-intake" element={<AssetIntake />} />
             <Route path="/submission-confirmation" element={<SubmissionConfirmation />} />
