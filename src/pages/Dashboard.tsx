@@ -21,7 +21,7 @@ const cards = [
       "A mutually visible network of developers we support and who choose to stand behind the studio through shared standards and work.",
     status: "CORE_AUTH: GRANTED",
     action: "FORGE INTEGRATION",
-    route: "/vessel",
+    route: "/developer-hub",
   },
   {
     number: "03",

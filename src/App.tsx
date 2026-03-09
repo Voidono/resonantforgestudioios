@@ -15,6 +15,8 @@ import Vessel from "./pages/Vessel";
 import Dashboard from "./pages/Dashboard";
 import AssetProduction from "./pages/AssetProduction";
 import AssetClassification from "./pages/AssetClassification";
+import DeveloperHub from "./pages/DeveloperHub";
+import DeveloperRoster from "./pages/DeveloperRoster";
 import AssetIntake from "./pages/AssetIntake";
 import SubmissionConfirmation from "./pages/SubmissionConfirmation";
 import OperationsHub from "./pages/OperationsHub";
