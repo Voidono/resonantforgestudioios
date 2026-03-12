@@ -217,6 +217,21 @@ const AssetProduction = () => {
               <ArrowRight className="w-5 h-5" />
             </button>
 
+            {/* Custom scope link */}
+            <div className="border border-border rounded-lg bg-card/40 p-4 text-center">
+              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-1">
+                LOOKING FOR CUSTOM SCOPE OR NON-PIPELINE USAGE?
+              </p>
+              <button
+                onClick={() => navigate("/contact")}
+                className="text-[10px] tracking-[0.12em] uppercase font-sans font-bold flex items-center justify-center gap-2 mx-auto hover:opacity-80 transition-opacity"
+                style={{ color: "hsl(var(--copper))" }}
+              >
+                CONTACT STUDIO FOR SPECIALIZED ENGAGEMENT
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             {/* Action icons */}
             <div className="grid grid-cols-3 gap-4">
               {[
