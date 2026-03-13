@@ -22,6 +22,7 @@ import SubmissionConfirmation from "./pages/SubmissionConfirmation";
 import OperationsHub from "./pages/OperationsHub";
 import ContactTerminal from "./pages/ContactTerminal";
 import AssetFinalReview from "./pages/AssetFinalReview";
+import UnderConstruction from "./pages/UnderConstruction";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
