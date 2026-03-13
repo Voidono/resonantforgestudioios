@@ -32,7 +32,7 @@ const subsystems = [
     metricValue: "25% CAPACITY",
     metricProgress: 25,
     metricColor: "#22c55e",
-    route: null as string | null,
+    route: "/systems-analysis",
     dotColor: "#22c55e",
   },
   {
