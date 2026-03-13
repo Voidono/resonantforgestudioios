@@ -219,7 +219,6 @@ const SystemsAnalysisHub = () => {
                 </p>
               </div>
 
-              {/* CTA Button */}
               <Button
                 variant={card.highlighted ? "default" : "outline"}
                 className={`w-full text-[10px] tracking-[0.15em] uppercase font-sans h-10 ${
