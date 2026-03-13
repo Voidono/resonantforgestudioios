@@ -138,13 +138,13 @@ const SystemsAnalysisConfirmation = () => {
             <Button
               variant="outline"
               className="text-[10px] tracking-[0.15em] uppercase font-sans h-10 px-6 border-copper/50 text-foreground hover:bg-copper/10"
-              onClick={() => navigate("/systems-analysis")}
+              onClick={() => navigate("/dashboard")}
             >
               RETURN TO HUB
             </Button>
             <Button
               className="text-[10px] tracking-[0.15em] uppercase font-sans h-10 px-6 bg-copper hover:bg-copper/90 text-background"
-              onClick={() => navigate("/principles")}
+              onClick={() => navigate("/faq")}
             >
               VIEW STUDIO PHILOSOPHY
               <ArrowRight className="w-4 h-4 ml-1" />
