@@ -21,6 +21,7 @@ import AssetIntake from "./pages/AssetIntake";
 import SubmissionConfirmation from "./pages/SubmissionConfirmation";
 import OperationsHub from "./pages/OperationsHub";
 import ContactTerminal from "./pages/ContactTerminal";
+import AssetFinalReview from "./pages/AssetFinalReview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/submission-confirmation" element={<SubmissionConfirmation />} />
             <Route path="/operations-hub" element={<OperationsHub />} />
             <Route path="/contact-terminal" element={<ContactTerminal />} />
+            <Route path="/asset-final-review" element={<AssetFinalReview />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />

@@ -86,7 +86,7 @@ const AssetIntake = () => {
       navigate("/auth");
       return;
     }
-    navigate("/submission-confirmation");
+    navigate("/asset-final-review");
   };
 
   return (
