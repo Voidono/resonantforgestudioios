@@ -24,6 +24,7 @@ import ContactTerminal from "./pages/ContactTerminal";
 import AssetFinalReview from "./pages/AssetFinalReview";
 import UnderConstruction from "./pages/UnderConstruction";
 import CommunityHub from "./pages/CommunityHub";
+import SystemsAnalysisHub from "./pages/SystemsAnalysisHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
