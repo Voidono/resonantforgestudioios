@@ -23,6 +23,7 @@ import OperationsHub from "./pages/OperationsHub";
 import ContactTerminal from "./pages/ContactTerminal";
 import AssetFinalReview from "./pages/AssetFinalReview";
 import UnderConstruction from "./pages/UnderConstruction";
+import CommunityHub from "./pages/CommunityHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/contact-terminal" element={<ContactTerminal />} />
             <Route path="/asset-final-review" element={<AssetFinalReview />} />
             <Route path="/under-construction" element={<UnderConstruction />} />
+            <Route path="/community" element={<CommunityHub />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />

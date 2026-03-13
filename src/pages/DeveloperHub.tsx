@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Settings, Monitor, Users } from "lucide-react";
+import { Settings, Monitor, Users } from "lucide-react";
+import DashboardSubNav from "@/components/DashboardSubNav";
 import Footer from "@/components/Footer";
 
 const DeveloperHub = () => {
@@ -7,19 +8,9 @@ const DeveloperHub = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent mt-[72px]" />
+      <DashboardSubNav />
 
-      <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full">
-        {/* Back */}
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase font-sans font-medium mb-10 hover:opacity-80 transition-opacity"
-          style={{ color: "hsl(var(--copper))" }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </button>
-
+      <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full pt-[120px] md:pt-[132px]">
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-wide text-foreground mb-4">
@@ -35,7 +26,6 @@ const DeveloperHub = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {/* Business-Facing Developers */}
           <div className="relative border border-border rounded-lg bg-card/60 backdrop-blur-sm p-8 md:p-10 flex flex-col items-center text-center min-h-[420px] justify-between">
-            {/* Corner dots */}
             <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
             <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
             <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
@@ -43,15 +33,12 @@ const DeveloperHub = () => {
 
             <div className="flex flex-col items-center">
               <Users className="w-10 h-10 mb-6" style={{ color: "hsl(var(--copper))" }} />
-
               <h2 className="text-2xl md:text-3xl font-serif font-bold tracking-wider mb-6" style={{ color: "hsl(var(--copper))" }}>
                 BUSINESS-<br />FACING<br />DEVELOPERS
               </h2>
-
               <p className="text-sm font-sans font-semibold text-foreground mb-3">
                 Focus: Systems architects, infrastructure engineers, and pipeline specialists.
               </p>
-
               <p className="text-xs text-muted-foreground leading-relaxed font-sans max-w-sm">
                 Precision-driven talent building the production-scale core. Join the ranks of developers forging the studio's technical backbone.
               </p>
@@ -69,7 +56,6 @@ const DeveloperHub = () => {
 
           {/* Community-Facing Developers */}
           <div className="relative border border-border rounded-lg bg-card/60 backdrop-blur-sm p-8 md:p-10 flex flex-col items-center text-center min-h-[420px] justify-between">
-            {/* Corner dots */}
             <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
             <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
             <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
@@ -79,17 +65,13 @@ const DeveloperHub = () => {
               <span className="text-xs tracking-[0.15em] uppercase font-sans font-medium text-muted-foreground mb-4">
                 (Page Not Needed Currently)
               </span>
-
               <Users className="w-10 h-10 mb-6" style={{ color: "hsl(var(--copper))" }} />
-
               <h2 className="text-2xl md:text-3xl font-serif font-bold tracking-wider mb-6" style={{ color: "hsl(var(--copper))" }}>
                 COMMUNITY-<br />FACING<br />DEVELOPERS
               </h2>
-
               <p className="text-sm font-sans font-semibold text-foreground mb-3">
                 Focus: Creative technologists, IP visionaries, and engagement architects.
               </p>
-
               <p className="text-xs text-muted-foreground leading-relaxed font-sans max-w-sm">
                 Collaborative minds bridging the gap between public IP and player systems. Lead the charge in transparent development.
               </p>
