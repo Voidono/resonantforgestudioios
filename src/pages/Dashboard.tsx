@@ -70,7 +70,15 @@ const Dashboard = () => {
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  if (tab === "BUSINESS") {
+                    navigate("/transaction");
+                  } else if (tab === "DEVELOPERS") {
+                    navigate("/developer-hub");
+                  } else {
+                    setActiveTab(tab);
+                  }
+                }}
                 className={`text-xs tracking-[0.2em] uppercase font-sans py-3 border-b-2 transition-colors ${
                   activeTab === tab
                     ? "border-copper text-copper"
