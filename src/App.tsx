@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/submission-confirmation" element={<SubmissionConfirmation />} />
             <Route path="/operations-hub" element={<OperationsHub />} />
             <Route path="/contact-terminal" element={<ContactTerminal />} />
+            <Route path="/asset-final-review" element={<AssetFinalReview />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />
