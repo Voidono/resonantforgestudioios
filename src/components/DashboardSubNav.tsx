@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 const tabs = [
   { label: "BUSINESS", route: "/transaction" },
   { label: "DEVELOPERS", route: "/developer-hub" },
-  { label: "COMMUNITY", route: "/dashboard" },
+  { label: "COMMUNITY", route: "/community" },
 ] as const;
 
 const DashboardSubNav = () => {
