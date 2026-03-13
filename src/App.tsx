@@ -56,6 +56,7 @@ const App = () => (
             <Route path="/under-construction" element={<UnderConstruction />} />
             <Route path="/community" element={<CommunityHub />} />
             <Route path="/systems-analysis" element={<SystemsAnalysisHub />} />
+            <Route path="/systems-analysis-confirmation" element={<SystemsAnalysisConfirmation />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />
