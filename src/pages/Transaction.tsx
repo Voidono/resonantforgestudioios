@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import Footer from "@/components/Footer";
-import { ArrowLeft, Box, TrendingUp, Paintbrush, Brain } from "lucide-react";
+import { Box, TrendingUp, Paintbrush, Brain } from "lucide-react";
+import DashboardSubNav from "@/components/DashboardSubNav";
 
 const subsystems = [
   {
@@ -16,7 +16,7 @@ const subsystems = [
     metricValue: "33% OPTIMIZED",
     metricProgress: 33,
     metricColor: "hsl(var(--copper))",
-    route: null,
+    route: null as string | null,
     dotColor: "hsl(var(--copper))",
   },
   {
@@ -32,7 +32,7 @@ const subsystems = [
     metricValue: "25% CAPACITY",
     metricProgress: 25,
     metricColor: "#22c55e",
-    route: null,
+    route: null as string | null,
     dotColor: "#22c55e",
   },
   {
@@ -64,7 +64,7 @@ const subsystems = [
     metricValue: "OFFLINE",
     metricProgress: 0,
     metricColor: "#ef4444",
-    route: null,
+    route: null as string | null,
     dotColor: "#ef4444",
   },
 ];
@@ -74,21 +74,9 @@ const Transaction = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top gradient line */}
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent mt-[72px]" />
+      <DashboardSubNav />
 
-      {/* Content */}
-      <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full">
-        {/* Back button */}
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 text-copper text-xs tracking-[0.15em] uppercase font-sans font-medium mb-10 hover:opacity-80 transition-opacity"
-          style={{ color: "hsl(var(--copper))" }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </button>
-
+      <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full pt-[120px] md:pt-[132px]">
         {/* Subsystem Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {subsystems.map((sys) => (
@@ -99,14 +87,12 @@ const Transaction = () => {
               }`}
               onClick={() => sys.route && navigate(sys.route)}
             >
-              {/* Status dot top-right */}
               <div
                 className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: sys.dotColor }}
               />
 
               <div>
-                {/* Icon */}
                 <div
                   className="w-10 h-10 rounded-md flex items-center justify-center mb-5"
                   style={{ backgroundColor: "hsl(var(--copper) / 0.12)" }}
@@ -114,7 +100,6 @@ const Transaction = () => {
                   <sys.icon className="w-5 h-5" style={{ color: "hsl(var(--copper))" }} />
                 </div>
 
-                {/* Subsystem label */}
                 <p
                   className="text-[10px] tracking-[0.2em] uppercase font-sans font-medium mb-2"
                   style={{ color: "hsl(var(--copper))" }}
@@ -122,7 +107,6 @@ const Transaction = () => {
                   SUBSYSTEM_{sys.id}
                 </p>
 
-                {/* Title + status */}
                 <div className="flex items-center gap-3 mb-4">
                   <h2 className="text-lg md:text-xl font-serif font-bold tracking-wider text-foreground">
                     {sys.title}
@@ -139,13 +123,11 @@ const Transaction = () => {
                   </span>
                 </div>
 
-                {/* Description */}
                 <p className="text-sm text-muted-foreground leading-relaxed font-sans">
                   {sys.description}
                 </p>
               </div>
 
-              {/* Bottom metric bar */}
               <div className="mt-6 pt-4 border-t border-border">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-medium text-muted-foreground">
