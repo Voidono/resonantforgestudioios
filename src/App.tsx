@@ -25,6 +25,7 @@ import AssetFinalReview from "./pages/AssetFinalReview";
 import UnderConstruction from "./pages/UnderConstruction";
 import CommunityHub from "./pages/CommunityHub";
 import SystemsAnalysisHub from "./pages/SystemsAnalysisHub";
+import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/under-construction" element={<UnderConstruction />} />
             <Route path="/community" element={<CommunityHub />} />
             <Route path="/systems-analysis" element={<SystemsAnalysisHub />} />
+            <Route path="/systems-analysis-confirmation" element={<SystemsAnalysisConfirmation />} />
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />

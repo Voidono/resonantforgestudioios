@@ -226,7 +226,7 @@ const SystemsAnalysisHub = () => {
                     ? "bg-copper hover:bg-copper/90 text-background"
                     : "border-copper/50 text-foreground hover:bg-copper/10"
                 }`}
-                onClick={() => navigate("/under-construction")}
+                onClick={() => navigate("/systems-analysis-confirmation")}
               >
                 <span>LEARN MORE</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
