@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const AssetFinalReview = () => {
@@ -82,8 +84,87 @@ const AssetFinalReview = () => {
   const [deliveryFormat, setDeliveryFormat] = useState("FBX");
   const [deliveryNotes, setDeliveryNotes] = useState("");
 
-  // Command Summary derived
+  const [submitting, setSubmitting] = useState(false);
   const specCompleteness = 79;
+
+  const handleSubmitSpecifications = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // Create asset request first
+      const { data: request, error: reqError } = await supabase
+        .from("asset_requests")
+        .insert({ user_id: user.id })
+        .select()
+        .single();
+      if (reqError) throw reqError;
+
+      // Insert specification for each asset
+      const specs = assets.map((a) => ({
+        request_id: request.id,
+        style_direction: styleDirection,
+        reference_completeness: referenceCompleteness,
+        visual_notes: visualNotes || null,
+        asset_usage: assetUsage,
+        asset_role: assetRole,
+        camera_distance: cameraDistance,
+        env_kit: envKit ?? false,
+        modular_kit: modularKit ?? false,
+        fidelity,
+        polycount_range: polycountRange,
+        lod_config: lodConfig,
+        surface_detail: surfaceDetail,
+        gameplay_interaction: gameplayInteraction,
+        modular,
+        scale,
+        pivot_orientation: pivotOrientation,
+        texture_resolution: resolution,
+        texture_set_count: textureSetCount,
+        material_workflow: materialWorkflow,
+        map_checklist: mapChecklist,
+        channel_packed: channelPacked,
+        material_notes: materialNotes || null,
+        num_variations: numVariations,
+        variant_method: variantMethod,
+        destruction_behavior: destructionBehavior,
+        variant_types: variantTypes,
+        variant_notes: variantNotes || null,
+        rig_type: rigType,
+        animation_count: animationCount,
+        vfx_integration: vfxIntegration,
+        rig_notes: rigNotes || null,
+        bulk_order_tier: bulkOrderTier,
+        asset_consistency: assetConsistency,
+        reference_quality: referenceQuality,
+        geometry_reuse: geometryReuse,
+        target_engine: targetEngine,
+        file_format: fileFormat,
+        pipeline_config: pipelineConfig,
+        delivery_texture_set_count: deliveryTextureSetCount,
+        delivery_material_workflow: deliveryMaterialWorkflow,
+        priority,
+        deliverables,
+        delivery_type: deliveryType,
+        delivery_format: deliveryFormat,
+        delivery_notes: deliveryNotes || null,
+      }));
+
+      const { error: specError } = await supabase
+        .from("asset_specifications")
+        .insert(specs);
+      if (specError) throw specError;
+
+      toast.success("Specifications submitted successfully");
+      navigate("/submission-confirmation");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit specifications");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const SectionHeader = ({ num, title }: { num: string; title: string }) => (
     <div className="flex items-center gap-3 mb-6 border-b border-border pb-3">
@@ -694,9 +775,10 @@ const AssetFinalReview = () => {
               </div>
 
               {/* CTA */}
-              <button onClick={() => navigate("/submission-confirmation")} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity">
-                CONTINUE TO FINAL REVIEW
-                <ArrowRight className="w-4 h-4" />
+              <button onClick={handleSubmitSpecifications} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {submitting ? "SUBMITTING..." : "CONTINUE TO FINAL REVIEW"}
+                {!submitting && <ArrowRight className="w-4 h-4" />}
               </button>
             </div>
 

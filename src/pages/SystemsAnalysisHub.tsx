@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, Layers, Code, ArrowRight, Shield, Clock, Check } from "lucide-react";
+import { Zap, Layers, Code, ArrowRight, Shield, Clock, Check, Loader2 } from "lucide-react";
 import DashboardSubNav from "@/components/DashboardSubNav";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const serviceCards = [
   {
@@ -62,7 +65,31 @@ const serviceCards = [
 
 const SystemsAnalysisHub = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleInquiry = async (serviceType: string, serviceTitle: string) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("service_inquiries").insert({
+        user_id: user.id,
+        service_type: serviceType,
+        service_title: serviceTitle,
+      });
+      if (error) throw error;
+      toast.success("Inquiry submitted successfully");
+      navigate("/systems-analysis-confirmation");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit inquiry");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -226,7 +253,8 @@ const SystemsAnalysisHub = () => {
                     ? "bg-copper hover:bg-copper/90 text-background"
                     : "border-copper/50 text-foreground hover:bg-copper/10"
                 }`}
-                onClick={() => navigate("/systems-analysis-confirmation")}
+                onClick={() => handleInquiry(card.type, card.title)}
+                disabled={submitting}
               >
                 <span>LEARN MORE</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -336,7 +364,8 @@ const SystemsAnalysisHub = () => {
             <div className="flex flex-col items-start md:items-end gap-3">
               <Button
                 className="bg-copper hover:bg-copper/90 text-background text-[10px] tracking-[0.15em] uppercase font-sans h-12 px-8"
-                onClick={() => navigate("/under-construction")}
+                onClick={() => handleInquiry("BUILD_INQUIRY", "BUILD INQUIRY")}
+                disabled={submitting}
               >
                 INITIALIZE BUILD INQUIRY
                 <ArrowRight className="w-4 h-4 ml-2" />

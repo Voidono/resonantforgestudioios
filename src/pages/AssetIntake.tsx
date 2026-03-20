@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
-import { ArrowLeft, ArrowRight, Search, Upload, PlusSquare, FolderOpen, AtSign, ChevronUp, Lock, Copy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search, Upload, PlusSquare, FolderOpen, AtSign, ChevronUp, Lock, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const categories = ["ENVIRONMENT", "CHARACTER", "CREATURE", "MISC"];
@@ -81,12 +83,55 @@ const AssetIntake = () => {
     setActiveAssetIndex(prev => Math.min(prev, assets.length - 2));
   };
 
-  const handleFinalize = () => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleFinalize = async () => {
     if (!user) {
       navigate("/auth");
       return;
     }
-    navigate("/asset-final-review");
+    setSubmitting(true);
+    try {
+      // Create the asset request
+      const { data: request, error: reqError } = await supabase
+        .from("asset_requests")
+        .insert({ user_id: user.id })
+        .select()
+        .single();
+      if (reqError) throw reqError;
+
+      // Insert all asset items
+      const items = assets.map((a) => ({
+        request_id: request.id,
+        asset_number: a.id,
+        size: a.size,
+        category: a.selectedCategory,
+        worked_before: a.workedBefore,
+        studio_code: a.studioCode || null,
+        requested_artist: a.requestedArtist || null,
+        project_descriptor: a.projectDescriptor || null,
+        project_description: a.projectDescription || null,
+        reference_search: a.referenceSearch,
+        rigging: a.rigging,
+        animation: a.animation,
+        vfx: a.vfx,
+        full_production: a.fullProduction,
+        stage_toggles: a.stageToggles,
+        iterations: a.iterations,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("asset_request_items")
+        .insert(items);
+      if (itemsError) throw itemsError;
+
+      toast.success("Asset request submitted successfully");
+      navigate("/asset-final-review");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit asset request");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { PlusSquare, FolderOpen, AtSign, Rss, Building2, Shield } from "lucide-react";
+import { PlusSquare, FolderOpen, AtSign, Rss, Building2, Shield, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const departments = [
   {
@@ -28,11 +31,42 @@ const departments = [
 
 const ContactTerminal = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [operatorName, setOperatorName] = useState("");
   const [studioName, setStudioName] = useState("");
   const [intakeRef, setIntakeRef] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!operatorName.trim() || !studioName.trim()) {
+      toast.error("Please fill in required fields (Operator Name & Studio Name)");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("contact_messages").insert({
+        user_id: user?.id || null,
+        operator_name: operatorName.trim(),
+        studio_name: studioName.trim(),
+        intake_reference: intakeRef.trim() || null,
+        department: selectedDept,
+        message_body: messageBody.trim() || null,
+      });
+      if (error) throw error;
+      toast.success("Message transmitted successfully");
+      setOperatorName("");
+      setStudioName("");
+      setIntakeRef("");
+      setMessageBody("");
+      setSelectedDept(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to transmit message");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -167,10 +201,13 @@ const ContactTerminal = () => {
             </div>
 
             <button
-              className="w-full py-4 rounded text-sm tracking-[0.2em] uppercase font-sans font-bold transition-opacity hover:opacity-90"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-full py-4 rounded text-sm tracking-[0.2em] uppercase font-sans font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
               style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
             >
-              TRANSMIT MESSAGE
+              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+              {submitting ? "TRANSMITTING..." : "TRANSMIT MESSAGE"}
             </button>
           </div>
 
