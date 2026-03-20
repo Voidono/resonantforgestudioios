@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { PlusSquare, FolderOpen, AtSign, Rss, Building2, Shield } from "lucide-react";
+import { PlusSquare, FolderOpen, AtSign, Rss, Building2, Shield, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const departments = [
   {
