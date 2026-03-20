@@ -14,6 +14,305 @@ export type Database = {
   }
   public: {
     Tables: {
+      asset_request_items: {
+        Row: {
+          animation: boolean | null
+          asset_number: string
+          category: string | null
+          created_at: string
+          full_production: boolean | null
+          id: string
+          iterations: Json | null
+          project_description: string | null
+          project_descriptor: string | null
+          reference_search: boolean | null
+          request_id: string
+          requested_artist: string | null
+          rigging: boolean | null
+          size: string
+          stage_toggles: Json | null
+          studio_code: string | null
+          vfx: boolean | null
+          worked_before: boolean | null
+        }
+        Insert: {
+          animation?: boolean | null
+          asset_number: string
+          category?: string | null
+          created_at?: string
+          full_production?: boolean | null
+          id?: string
+          iterations?: Json | null
+          project_description?: string | null
+          project_descriptor?: string | null
+          reference_search?: boolean | null
+          request_id: string
+          requested_artist?: string | null
+          rigging?: boolean | null
+          size: string
+          stage_toggles?: Json | null
+          studio_code?: string | null
+          vfx?: boolean | null
+          worked_before?: boolean | null
+        }
+        Update: {
+          animation?: boolean | null
+          asset_number?: string
+          category?: string | null
+          created_at?: string
+          full_production?: boolean | null
+          id?: string
+          iterations?: Json | null
+          project_description?: string | null
+          project_descriptor?: string | null
+          reference_search?: boolean | null
+          request_id?: string
+          requested_artist?: string | null
+          rigging?: boolean | null
+          size?: string
+          stage_toggles?: Json | null
+          studio_code?: string | null
+          vfx?: boolean | null
+          worked_before?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "asset_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asset_requests: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      asset_specifications: {
+        Row: {
+          animation_count: string | null
+          asset_consistency: string | null
+          asset_item_id: string | null
+          asset_role: string | null
+          asset_usage: string | null
+          bulk_order_tier: string | null
+          camera_distance: string | null
+          channel_packed: boolean | null
+          created_at: string
+          deliverables: Json | null
+          delivery_format: string | null
+          delivery_material_workflow: string | null
+          delivery_notes: string | null
+          delivery_texture_set_count: string | null
+          delivery_type: string | null
+          destruction_behavior: string | null
+          env_kit: boolean | null
+          fidelity: string | null
+          file_format: string | null
+          gameplay_interaction: Json | null
+          geometry_reuse: string | null
+          id: string
+          lod_config: string | null
+          map_checklist: Json | null
+          material_notes: string | null
+          material_workflow: string | null
+          modular: boolean | null
+          modular_kit: boolean | null
+          num_variations: string | null
+          pipeline_config: Json | null
+          pivot_orientation: string | null
+          polycount_range: string | null
+          priority: string | null
+          reference_completeness: string | null
+          reference_quality: string | null
+          request_id: string
+          rig_notes: string | null
+          rig_type: string | null
+          scale: string | null
+          style_direction: string | null
+          surface_detail: string | null
+          target_engine: string | null
+          texture_resolution: string | null
+          texture_set_count: string | null
+          variant_method: string | null
+          variant_notes: string | null
+          variant_types: Json | null
+          vfx_integration: string | null
+          visual_notes: string | null
+        }
+        Insert: {
+          animation_count?: string | null
+          asset_consistency?: string | null
+          asset_item_id?: string | null
+          asset_role?: string | null
+          asset_usage?: string | null
+          bulk_order_tier?: string | null
+          camera_distance?: string | null
+          channel_packed?: boolean | null
+          created_at?: string
+          deliverables?: Json | null
+          delivery_format?: string | null
+          delivery_material_workflow?: string | null
+          delivery_notes?: string | null
+          delivery_texture_set_count?: string | null
+          delivery_type?: string | null
+          destruction_behavior?: string | null
+          env_kit?: boolean | null
+          fidelity?: string | null
+          file_format?: string | null
+          gameplay_interaction?: Json | null
+          geometry_reuse?: string | null
+          id?: string
+          lod_config?: string | null
+          map_checklist?: Json | null
+          material_notes?: string | null
+          material_workflow?: string | null
+          modular?: boolean | null
+          modular_kit?: boolean | null
+          num_variations?: string | null
+          pipeline_config?: Json | null
+          pivot_orientation?: string | null
+          polycount_range?: string | null
+          priority?: string | null
+          reference_completeness?: string | null
+          reference_quality?: string | null
+          request_id: string
+          rig_notes?: string | null
+          rig_type?: string | null
+          scale?: string | null
+          style_direction?: string | null
+          surface_detail?: string | null
+          target_engine?: string | null
+          texture_resolution?: string | null
+          texture_set_count?: string | null
+          variant_method?: string | null
+          variant_notes?: string | null
+          variant_types?: Json | null
+          vfx_integration?: string | null
+          visual_notes?: string | null
+        }
+        Update: {
+          animation_count?: string | null
+          asset_consistency?: string | null
+          asset_item_id?: string | null
+          asset_role?: string | null
+          asset_usage?: string | null
+          bulk_order_tier?: string | null
+          camera_distance?: string | null
+          channel_packed?: boolean | null
+          created_at?: string
+          deliverables?: Json | null
+          delivery_format?: string | null
+          delivery_material_workflow?: string | null
+          delivery_notes?: string | null
+          delivery_texture_set_count?: string | null
+          delivery_type?: string | null
+          destruction_behavior?: string | null
+          env_kit?: boolean | null
+          fidelity?: string | null
+          file_format?: string | null
+          gameplay_interaction?: Json | null
+          geometry_reuse?: string | null
+          id?: string
+          lod_config?: string | null
+          map_checklist?: Json | null
+          material_notes?: string | null
+          material_workflow?: string | null
+          modular?: boolean | null
+          modular_kit?: boolean | null
+          num_variations?: string | null
+          pipeline_config?: Json | null
+          pivot_orientation?: string | null
+          polycount_range?: string | null
+          priority?: string | null
+          reference_completeness?: string | null
+          reference_quality?: string | null
+          request_id?: string
+          rig_notes?: string | null
+          rig_type?: string | null
+          scale?: string | null
+          style_direction?: string | null
+          surface_detail?: string | null
+          target_engine?: string | null
+          texture_resolution?: string | null
+          texture_set_count?: string | null
+          variant_method?: string | null
+          variant_notes?: string | null
+          variant_types?: Json | null
+          vfx_integration?: string | null
+          visual_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_specifications_asset_item_id_fkey"
+            columns: ["asset_item_id"]
+            isOneToOne: false
+            referencedRelation: "asset_request_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_specifications_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "asset_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          department: string | null
+          id: string
+          intake_reference: string | null
+          message_body: string | null
+          operator_name: string
+          studio_name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          intake_reference?: string | null
+          message_body?: string | null
+          operator_name: string
+          studio_name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          intake_reference?: string | null
+          message_body?: string | null
+          operator_name?: string
+          studio_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -41,6 +340,33 @@ export type Database = {
           updated_at?: string
           user_id?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      service_inquiries: {
+        Row: {
+          created_at: string
+          id: string
+          service_title: string
+          service_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          service_title: string
+          service_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          service_title?: string
+          service_type?: string
+          status?: string
+          user_id?: string
         }
         Relationships: []
       }
