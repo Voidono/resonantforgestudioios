@@ -201,10 +201,13 @@ const ContactTerminal = () => {
             </div>
 
             <button
-              className="w-full py-4 rounded text-sm tracking-[0.2em] uppercase font-sans font-bold transition-opacity hover:opacity-90"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-full py-4 rounded text-sm tracking-[0.2em] uppercase font-sans font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
               style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
             >
-              TRANSMIT MESSAGE
+              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+              {submitting ? "TRANSMITTING..." : "TRANSMIT MESSAGE"}
             </button>
           </div>
 
