@@ -364,7 +364,8 @@ const SystemsAnalysisHub = () => {
             <div className="flex flex-col items-start md:items-end gap-3">
               <Button
                 className="bg-copper hover:bg-copper/90 text-background text-[10px] tracking-[0.15em] uppercase font-sans h-12 px-8"
-                onClick={() => navigate("/under-construction")}
+                onClick={() => handleInquiry("BUILD_INQUIRY", "BUILD INQUIRY")}
+                disabled={submitting}
               >
                 INITIALIZE BUILD INQUIRY
                 <ArrowRight className="w-4 h-4 ml-2" />
