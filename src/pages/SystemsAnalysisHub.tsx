@@ -253,7 +253,8 @@ const SystemsAnalysisHub = () => {
                     ? "bg-copper hover:bg-copper/90 text-background"
                     : "border-copper/50 text-foreground hover:bg-copper/10"
                 }`}
-                onClick={() => navigate("/systems-analysis-confirmation")}
+                onClick={() => handleInquiry(card.type, card.title)}
+                disabled={submitting}
               >
                 <span>LEARN MORE</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
