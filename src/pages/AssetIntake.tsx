@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
-import { ArrowLeft, ArrowRight, Search, Upload, PlusSquare, FolderOpen, AtSign, ChevronUp, Lock, Copy } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search, Upload, PlusSquare, FolderOpen, AtSign, ChevronUp, Lock, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const categories = ["ENVIRONMENT", "CHARACTER", "CREATURE", "MISC"];
