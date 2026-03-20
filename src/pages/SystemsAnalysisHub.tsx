@@ -65,7 +65,31 @@ const serviceCards = [
 
 const SystemsAnalysisHub = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleInquiry = async (serviceType: string, serviceTitle: string) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("service_inquiries").insert({
+        user_id: user.id,
+        service_type: serviceType,
+        service_title: serviceTitle,
+      });
+      if (error) throw error;
+      toast.success("Inquiry submitted successfully");
+      navigate("/systems-analysis-confirmation");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit inquiry");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

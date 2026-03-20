@@ -775,9 +775,11 @@ const AssetFinalReview = () => {
               </div>
 
               {/* CTA */}
-              <button onClick={() => navigate("/submission-confirmation")} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity">
-                CONTINUE TO FINAL REVIEW
-                <ArrowRight className="w-4 h-4" />
+              <button onClick={handleSubmitSpecifications} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {submitting ? "SUBMITTING..." : "CONTINUE TO FINAL REVIEW"}
+                {!submitting && <ArrowRight className="w-4 h-4" />}
+              </button>
               </button>
             </div>
 
