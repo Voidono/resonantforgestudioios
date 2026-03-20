@@ -31,11 +31,42 @@ const departments = [
 
 const ContactTerminal = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [operatorName, setOperatorName] = useState("");
   const [studioName, setStudioName] = useState("");
   const [intakeRef, setIntakeRef] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!operatorName.trim() || !studioName.trim()) {
+      toast.error("Please fill in required fields (Operator Name & Studio Name)");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("contact_messages").insert({
+        user_id: user?.id || null,
+        operator_name: operatorName.trim(),
+        studio_name: studioName.trim(),
+        intake_reference: intakeRef.trim() || null,
+        department: selectedDept,
+        message_body: messageBody.trim() || null,
+      });
+      if (error) throw error;
+      toast.success("Message transmitted successfully");
+      setOperatorName("");
+      setStudioName("");
+      setIntakeRef("");
+      setMessageBody("");
+      setSelectedDept(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to transmit message");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
