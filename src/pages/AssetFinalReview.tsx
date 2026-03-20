@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const AssetFinalReview = () => {
