@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, Layers, Code, ArrowRight, Shield, Clock, Check } from "lucide-react";
+import { Zap, Layers, Code, ArrowRight, Shield, Clock, Check, Loader2 } from "lucide-react";
 import DashboardSubNav from "@/components/DashboardSubNav";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const serviceCards = [
   {
