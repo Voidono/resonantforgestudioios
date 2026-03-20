@@ -780,7 +780,6 @@ const AssetFinalReview = () => {
                 {submitting ? "SUBMITTING..." : "CONTINUE TO FINAL REVIEW"}
                 {!submitting && <ArrowRight className="w-4 h-4" />}
               </button>
-              </button>
             </div>
 
             {/* Technical Support */}
