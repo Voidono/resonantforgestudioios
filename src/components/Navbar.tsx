@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, Sword, FlaskConical, User } from "lucide-react";
+import { useRole } from "@/hooks/useRole";
+import { Home, Sword, FlaskConical, User, Shield } from "lucide-react";
 import studioLogo from "@/assets/studio-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { hasAdminAccess } = useRole();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -31,6 +33,12 @@ const Navbar = () => {
               <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
                 Dashboard
               </Link>
+              {hasAdminAccess && (
+                <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <Shield className="w-3.5 h-3.5" />
+                  Admin
+                </Link>
+              )}
               <Link to="/vote" className="text-copper hover:text-copper/80 transition-colors font-medium">
                 Vote
               </Link>
