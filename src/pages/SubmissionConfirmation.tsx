@@ -243,11 +243,11 @@ const SubmissionConfirmation = () => {
           <div className="flex items-center gap-2">
             <FolderOpen className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">
-              FORGE CORE CONSOLE V.2.4.0
+              FORGE CORE CONSOLE V.1.0.0
             </span>
           </div>
           <span className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">
-            © 2024 RESONANT FORGE STUDIOS // ASSET LOGISTICS DIVISION
+            © 2026 RESONANT FORGE STUDIOS // ASSET LOGISTICS DIVISION
           </span>
         </div>
       </div>
