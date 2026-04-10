@@ -26,7 +26,7 @@ const DeveloperRoster = () => {
     if (!error && data) {
       setDevelopers(data.map((d) => ({
         ...d,
-        pipeline_data: d.pipeline_data as Developer["pipeline_data"],
+        pipeline_data: d.pipeline_data as unknown as Developer["pipeline_data"],
       })));
     }
     setLoading(false);
