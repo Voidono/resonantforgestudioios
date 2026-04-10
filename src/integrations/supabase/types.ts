@@ -313,6 +313,42 @@ export type Database = {
         }
         Relationships: []
       }
+      developers: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          pipeline_data: Json | null
+          role: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          pipeline_data?: Json | null
+          role: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          pipeline_data?: Json | null
+          role?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
