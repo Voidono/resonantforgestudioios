@@ -111,6 +111,7 @@ const AdminDashboard = () => {
         { label: "EDIT", path: "/operations-hub" },
       ],
       progress: null,
+      route: null,
     },
     {
       icon: SearchCode,
