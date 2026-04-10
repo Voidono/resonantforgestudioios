@@ -28,6 +28,7 @@ import SystemsAnalysisHub from "./pages/SystemsAnalysisHub";
 import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminHub from "./pages/AdminHub";
+import AssetProductionForge from "./pages/AssetProductionForge";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
