@@ -149,6 +149,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "IP THROUGHPUT", value: "50% CAPACITY", percent: 50 },
+      route: "/admin-operations/forge",
     },
     {
       icon: Settings2,
