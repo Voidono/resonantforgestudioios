@@ -111,6 +111,7 @@ const AdminDashboard = () => {
         { label: "EDIT", path: "/operations-hub" },
       ],
       progress: null,
+      route: null,
     },
     {
       icon: SearchCode,
@@ -130,6 +131,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "DIAGNOSTIC STATUS", value: "STABLE", percent: 75 },
+      route: null,
     },
     {
       icon: Package,
@@ -149,6 +151,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "IP THROUGHPUT", value: "50% CAPACITY", percent: 50 },
+      route: "/admin-operations/forge",
     },
     {
       icon: Settings2,
@@ -166,6 +169,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "PIPELINE HEALTH", value: "CRITICAL", percent: 30, critical: true },
+      route: null,
     },
   ];
 
@@ -217,7 +221,10 @@ const AdminDashboard = () => {
           {modules.map((mod) => (
             <div
               key={mod.title}
-              className="border border-border rounded-lg bg-card/40 p-6 flex flex-col justify-between min-h-[280px]"
+              onClick={() => mod.route && navigate(mod.route)}
+              className={`border border-border rounded-lg bg-card/40 p-6 flex flex-col justify-between min-h-[280px] ${
+                mod.route ? "cursor-pointer hover:border-copper/40 transition-colors" : ""
+              }`}
             >
               {/* Top row: icon + badges */}
               <div>
