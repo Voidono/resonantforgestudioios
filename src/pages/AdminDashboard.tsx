@@ -221,7 +221,10 @@ const AdminDashboard = () => {
           {modules.map((mod) => (
             <div
               key={mod.title}
-              className="border border-border rounded-lg bg-card/40 p-6 flex flex-col justify-between min-h-[280px]"
+              onClick={() => mod.route && navigate(mod.route)}
+              className={`border border-border rounded-lg bg-card/40 p-6 flex flex-col justify-between min-h-[280px] ${
+                mod.route ? "cursor-pointer hover:border-copper/40 transition-colors" : ""
+              }`}
             >
               {/* Top row: icon + badges */}
               <div>
