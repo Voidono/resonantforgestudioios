@@ -131,6 +131,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "DIAGNOSTIC STATUS", value: "STABLE", percent: 75 },
+      route: null,
     },
     {
       icon: Package,
@@ -168,6 +169,7 @@ const AdminDashboard = () => {
       actions: null,
       secondaryActions: null,
       progress: { label: "PIPELINE HEALTH", value: "CRITICAL", percent: 30, critical: true },
+      route: null,
     },
   ];
 
