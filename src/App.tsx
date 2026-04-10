@@ -27,6 +27,7 @@ import CommunityHub from "./pages/CommunityHub";
 import SystemsAnalysisHub from "./pages/SystemsAnalysisHub";
 import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminHub from "./pages/AdminHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,7 +62,8 @@ const App = () => (
             <Route path="/vessel" element={<Vessel />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/vote" element={<Vote />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminHub />} />
+            <Route path="/admin-operations" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
