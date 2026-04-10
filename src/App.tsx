@@ -27,6 +27,7 @@ import CommunityHub from "./pages/CommunityHub";
 import SystemsAnalysisHub from "./pages/SystemsAnalysisHub";
 import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminHub from "./pages/AdminHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
