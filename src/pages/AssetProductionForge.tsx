@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutGrid,
-  ArrowRight,
   Inbox,
   Factory,
   CheckCircle2,
@@ -13,9 +12,6 @@ import {
   BarChart3,
   Settings2,
   FileText,
-  Search,
-  Bell,
-  Settings,
   Loader2,
   Plus,
 } from "lucide-react";
