@@ -6,8 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutGrid,
   Inbox,
-  Factory,
-  CheckCircle2,
+  FolderKanban,
+  Archive,
   Database,
   BarChart3,
   Settings2,
@@ -17,12 +17,14 @@ import {
 } from "lucide-react";
 import ForgeDashboard from "@/components/forge/ForgeDashboard";
 import ForgeIntake from "@/components/forge/ForgeIntake";
+import ForgeProjects from "@/components/forge/ForgeProjects";
+import ForgeArchive from "@/components/forge/ForgeArchive";
 
 const sidebarItems = [
   { icon: LayoutGrid, label: "Dashboard", id: "dashboard" },
   { icon: Inbox, label: "Intake", id: "intake" },
-  { icon: Factory, label: "In Production", id: "production" },
-  { icon: CheckCircle2, label: "Completed", id: "completed" },
+  { icon: FolderKanban, label: "Projects", id: "projects" },
+  { icon: Archive, label: "Archive", id: "archive" },
   { icon: Database, label: "Data", id: "data" },
   { icon: BarChart3, label: "Metrics", id: "metrics" },
   { icon: Settings2, label: "Config", id: "config" },
@@ -79,6 +81,10 @@ const AssetProductionForge = () => {
     switch (activeTab) {
       case "intake":
         return <ForgeIntake stats={stats} />;
+      case "projects":
+        return <ForgeProjects />;
+      case "archive":
+        return <ForgeArchive />;
       case "dashboard":
       default:
         return <ForgeDashboard onNavigateTab={setActiveTab} />;
