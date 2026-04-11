@@ -92,82 +92,43 @@ const AssetProductionForge = () => {
   return (
     <div className="min-h-screen bg-background flex mt-[72px]">
       {/* Sidebar */}
-      <aside className="w-60 border-r border-border bg-card/30 flex flex-col shrink-0 hidden lg:flex">
-        <div className="p-5 border-b border-border">
-          <h2 className="text-sm font-serif font-bold tracking-wider text-copper">ASSET MANAGEMENT</h2>
-          <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mt-1">INTERNAL PRODUCTION // LANE 01</p>
+      <aside className="w-64 border-r border-border/50 bg-background/80 flex flex-col shrink-0 hidden lg:flex">
+        <div className="px-6 py-6 border-b border-border/50">
+          <h2 className="text-sm font-serif font-bold tracking-[0.15em] text-copper">ASSET MANAGEMENT</h2>
+          <p className="text-[9px] tracking-[0.12em] uppercase font-sans text-muted-foreground mt-1.5">INTERNAL PRODUCTION // LANE 01</p>
         </div>
 
-        <div className="p-4">
-          <button
-            onClick={() => navigate("/asset-intake")}
-            className="w-full py-2.5 rounded text-xs tracking-[0.12em] uppercase font-sans font-bold flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
-          >
-            <Plus className="w-4 h-4" />
-            NEW_INTAKE
-          </button>
-        </div>
-
-        <nav className="flex-1 px-3 py-2 space-y-0.5">
+        <nav className="flex-1 py-4 space-y-1">
           {sidebarItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-xs font-sans transition-colors ${
+              className={`w-full flex items-center gap-4 px-6 py-3.5 text-[11px] tracking-[0.18em] uppercase font-sans font-medium transition-all ${
                 activeTab === item.id
-                  ? "text-copper bg-copper/10 border-l-2 border-copper"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/60"
+                  ? "text-copper bg-copper/8 border-l-[3px] border-copper"
+                  : "text-muted-foreground hover:text-foreground border-l-[3px] border-transparent"
               }`}
             >
-              <item.icon className="w-4 h-4" />
+              <item.icon className="w-4 h-4 shrink-0" />
               {item.label}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border mt-auto">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-copper/20 flex items-center justify-center">
-              <Settings className="w-3 h-3 text-copper" />
-            </div>
-            <div>
-              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">SYSTEM NODE</p>
-              <p className="text-[10px] font-sans font-bold text-foreground">FORGE_PRIMARY</p>
-            </div>
-          </div>
+        <div className="px-6 py-5 border-t border-border/50 mt-auto">
+          <button
+            onClick={() => navigate("/asset-intake")}
+            className="w-full py-3 rounded text-[10px] tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            NEW INTAKE
+          </button>
         </div>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-0 overflow-auto">
-        {/* Top Bar */}
-        <header className="border-b border-border px-6 py-3 flex items-center justify-between shrink-0">
-          <h1 className="text-sm font-serif font-bold tracking-[0.2em] text-foreground">ASSET_PRODUCTION_FORGE</h1>
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="SEARCH_QUEUE..."
-                className="bg-card/40 border border-border rounded pl-9 pr-4 py-1.5 text-xs font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-copper/40 w-48"
-              />
-            </div>
-            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-              <Bell className="w-4 h-4" />
-            </button>
-            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-              <Settings className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => navigate("/admin-operations")}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowRight className="w-4 h-4 rotate-180" />
-            </button>
-          </div>
-        </header>
-
         <div className="flex-1 p-6 overflow-auto">
           {renderContent()}
         </div>
