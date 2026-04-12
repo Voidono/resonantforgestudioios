@@ -53,15 +53,15 @@ const AssetProductionForge = () => {
   useEffect(() => {
     if (!hasAdminAccess) return;
     const fetchStats = async () => {
-      const { data } = await supabase.from("asset_requests").select("status");
+      const { data } = await supabase.from("asset_requests").select("status, workflow_step");
       const items = data || [];
       setStats({
-        openIntakes: items.filter((a) => a.status === "pending").length || 14,
-        reviewing: 8,
-        offersOut: 5,
-        inNegos: 3,
-        contracts: 6,
-        productionReady: 4,
+        openIntakes: items.filter((a) => a.status === "pending").length,
+        reviewing: items.filter((a) => a.workflow_step === 1 || a.workflow_step === 2).length,
+        offersOut: items.filter((a) => a.workflow_step === 3).length,
+        inNegos: items.filter((a) => a.workflow_step === 4).length,
+        contracts: items.filter((a) => a.workflow_step === 5 || a.workflow_step === 6).length,
+        productionReady: items.filter((a) => a.status === "in_production" || a.status === "active").length,
       });
     };
     fetchStats();
