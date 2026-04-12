@@ -93,9 +93,21 @@ const AssetIntake = () => {
     setSubmitting(true);
     try {
       // Create the asset request
+      // Derive project name and client name from the first asset's data
+      const firstAsset = assets[0];
+      const projectName = firstAsset?.projectDescriptor || null;
+      const clientName = firstAsset?.studioCode || null;
+
       const { data: request, error: reqError } = await supabase
         .from("asset_requests")
-        .insert({ user_id: user.id })
+        .insert({
+          user_id: user.id,
+          project_name: projectName,
+          client_name: clientName,
+          budget: 0,
+          workflow_step: 1,
+          status: "pending",
+        })
         .select()
         .single();
       if (reqError) throw reqError;
