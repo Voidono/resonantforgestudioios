@@ -87,25 +87,67 @@ export type Database = {
       }
       asset_requests: {
         Row: {
+          budget: number | null
+          client_name: string | null
+          completed_date: string | null
           created_at: string
+          current_step: number | null
+          deadline: string | null
+          est_hours: number | null
+          final_value: number | null
           id: string
+          logged_hours: number | null
+          priority: string | null
+          profit: number | null
+          project_name: string | null
+          project_type: string | null
           status: string
+          total_hours: number | null
           updated_at: string
           user_id: string
+          workflow_step: number | null
         }
         Insert: {
+          budget?: number | null
+          client_name?: string | null
+          completed_date?: string | null
           created_at?: string
+          current_step?: number | null
+          deadline?: string | null
+          est_hours?: number | null
+          final_value?: number | null
           id?: string
+          logged_hours?: number | null
+          priority?: string | null
+          profit?: number | null
+          project_name?: string | null
+          project_type?: string | null
           status?: string
+          total_hours?: number | null
           updated_at?: string
           user_id: string
+          workflow_step?: number | null
         }
         Update: {
+          budget?: number | null
+          client_name?: string | null
+          completed_date?: string | null
           created_at?: string
+          current_step?: number | null
+          deadline?: string | null
+          est_hours?: number | null
+          final_value?: number | null
           id?: string
+          logged_hours?: number | null
+          priority?: string | null
+          profit?: number | null
+          project_name?: string | null
+          project_type?: string | null
           status?: string
+          total_hours?: number | null
           updated_at?: string
           user_id?: string
+          workflow_step?: number | null
         }
         Relationships: []
       }
@@ -378,6 +420,38 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      project_contributors: {
+        Row: {
+          contributor_name: string
+          created_at: string
+          hours: number
+          id: string
+          project_id: string
+        }
+        Insert: {
+          contributor_name: string
+          created_at?: string
+          hours?: number
+          id?: string
+          project_id: string
+        }
+        Update: {
+          contributor_name?: string
+          created_at?: string
+          hours?: number
+          id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_contributors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "asset_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_inquiries: {
         Row: {
