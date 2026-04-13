@@ -84,10 +84,33 @@ const AssetIntake = () => {
   };
 
   const [submitting, setSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+
+  const validateAssets = (): Record<string, string[]> => {
+    const errors: Record<string, string[]> = {};
+    assets.forEach((a) => {
+      const assetErrors: string[] = [];
+      if (!a.projectDescriptor.trim()) assetErrors.push("Project Descriptor is required");
+      if (!a.selectedCategory) assetErrors.push("Asset Category is required");
+      if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
+      if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
+      if (assetErrors.length > 0) errors[a.id] = assetErrors;
+    });
+    setValidationErrors(errors);
+    return errors;
+  };
 
   const handleFinalize = async () => {
     if (!user) {
       navigate("/auth");
+      return;
+    }
+    const errors = validateAssets();
+    if (Object.keys(errors).length > 0) {
+      const firstErrorAssetId = Object.keys(errors)[0];
+      const errorIndex = assets.findIndex(a => a.id === firstErrorAssetId);
+      if (errorIndex >= 0) setActiveAssetIndex(errorIndex);
+      toast.error("Please fill in all required fields before proceeding");
       return;
     }
     setSubmitting(true);
@@ -210,7 +233,9 @@ const AssetIntake = () => {
                 key={i}
                 onClick={() => setActiveAssetIndex(i)}
                 className={`px-3 py-1.5 rounded text-[11px] tracking-[0.05em] font-sans font-bold transition-colors border ${
-                  i === activeAssetIndex
+                  validationErrors[a.id]
+                    ? "border-destructive bg-destructive/10 text-destructive"
+                    : i === activeAssetIndex
                     ? "border-copper bg-copper/20 text-copper"
                     : "border-border text-muted-foreground hover:border-copper/40"
                 }`}
@@ -254,6 +279,18 @@ const AssetIntake = () => {
       </div>
 
       <section className="flex-1 px-4 md:px-8 py-10 max-w-6xl mx-auto w-full">
+        {/* Validation Error Banner */}
+        {validationErrors[asset.id] && (
+          <div className="mb-6 border border-destructive/50 rounded-lg bg-destructive/10 p-4">
+            <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-destructive mb-2">⚠ REQUIRED FIELDS MISSING</p>
+            <ul className="space-y-1">
+              {validationErrors[asset.id].map((err, i) => (
+                <li key={i} className="text-[10px] tracking-[0.1em] uppercase font-sans text-destructive/80">— {err}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* LEFT COLUMN */}
           <div className="space-y-8">
@@ -265,11 +302,11 @@ const AssetIntake = () => {
               </div>
               <div className="border border-border rounded-lg bg-card/40 p-6 space-y-5">
                 <div>
-                  <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground mb-3">HAVE YOU WORKED WITH US BEFORE?</p>
+                  <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-3 ${validationErrors[asset.id]?.some(e => e.includes("worked with us")) ? "text-destructive" : "text-foreground"}`}>HAVE YOU WORKED WITH US BEFORE? {validationErrors[asset.id]?.some(e => e.includes("worked with us")) && <span className="text-destructive">*</span>}</p>
                   <div className="flex gap-4">
                     {[true, false].map(val => (
-                      <button key={String(val)} onClick={() => updateAsset({ workedBefore: val })} className={`flex items-center gap-2 text-xs font-sans font-medium ${asset.workedBefore === val ? "text-foreground" : "text-muted-foreground"}`}>
-                        <div className={`w-4 h-4 rounded-sm border flex items-center justify-center ${asset.workedBefore === val ? "border-copper bg-copper" : "border-border"}`}>
+                      <button key={String(val)} onClick={() => { updateAsset({ workedBefore: val }); setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(e => !e.includes("worked with us")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} className={`flex items-center gap-2 text-xs font-sans font-medium ${asset.workedBefore === val ? "text-foreground" : "text-muted-foreground"}`}>
+                        <div className={`w-4 h-4 rounded-sm border flex items-center justify-center ${asset.workedBefore === val ? "border-copper bg-copper" : validationErrors[asset.id]?.some(e => e.includes("worked with us")) ? "border-destructive" : "border-border"}`}>
                           {asset.workedBefore === val && <span className="text-[8px] text-background">✓</span>}
                         </div>
                         {val ? "YES" : "NO"}
@@ -278,9 +315,9 @@ const AssetIntake = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground mb-2">STUDIO NAME SEARCH</p>
+                  <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "text-destructive" : "text-foreground"}`}>STUDIO NAME SEARCH {validationErrors[asset.id]?.some(e => e.includes("Studio Code")) && <span className="text-destructive">*</span>}</p>
                   <div className="relative">
-                    <input type="text" value={asset.studioCode} onChange={(e) => updateAsset({ studioCode: e.target.value })} placeholder="Enter Studio Identification Code..." className="w-full bg-background border border-border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-copper/50" />
+                    <input type="text" value={asset.studioCode} onChange={(e) => { updateAsset({ studioCode: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Studio Code")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Enter Studio Identification Code..." className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
@@ -299,14 +336,14 @@ const AssetIntake = () => {
               </div>
               <div className="space-y-5">
                 <div>
-                  <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground mb-2">PROJECT DESCRIPTOR</p>
-                  <input type="text" value={asset.projectDescriptor} onChange={(e) => updateAsset({ projectDescriptor: e.target.value })} placeholder="Enter Asset Identification..." className="w-full bg-background border border-border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-copper/50" />
+                  <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Project Descriptor")) ? "text-destructive" : "text-foreground"}`}>PROJECT DESCRIPTOR {validationErrors[asset.id]?.some(e => e.includes("Project Descriptor")) && <span className="text-destructive">*</span>}</p>
+                  <input type="text" value={asset.projectDescriptor} onChange={(e) => { updateAsset({ projectDescriptor: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Project Descriptor")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Enter Asset Identification..." className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Project Descriptor")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
                 </div>
                 <div>
-                  <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground mb-2">ASSET CATEGORY SELECTION</p>
+                  <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Category")) ? "text-destructive" : "text-foreground"}`}>ASSET CATEGORY SELECTION {validationErrors[asset.id]?.some(e => e.includes("Category")) && <span className="text-destructive">*</span>}</p>
                   <div className="grid grid-cols-4 gap-2">
                     {categories.map((cat) => (
-                      <button key={cat} onClick={() => updateAsset({ selectedCategory: cat === asset.selectedCategory ? null : cat })} className={`py-2.5 rounded border text-[10px] tracking-[0.1em] uppercase font-sans font-medium transition-colors ${asset.selectedCategory === cat ? "border-copper/60 text-foreground bg-copper/10" : "border-border text-muted-foreground hover:border-copper/30"}`}>
+                      <button key={cat} onClick={() => { updateAsset({ selectedCategory: cat === asset.selectedCategory ? null : cat }); if (cat !== asset.selectedCategory) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Category")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} className={`py-2.5 rounded border text-[10px] tracking-[0.1em] uppercase font-sans font-medium transition-colors ${asset.selectedCategory === cat ? "border-copper/60 text-foreground bg-copper/10" : validationErrors[asset.id]?.some(e => e.includes("Category")) ? "border-destructive/50 text-muted-foreground hover:border-destructive/70" : "border-border text-muted-foreground hover:border-copper/30"}`}>
                         {cat}
                       </button>
                     ))}
