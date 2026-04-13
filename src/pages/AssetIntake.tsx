@@ -233,7 +233,9 @@ const AssetIntake = () => {
                 key={i}
                 onClick={() => setActiveAssetIndex(i)}
                 className={`px-3 py-1.5 rounded text-[11px] tracking-[0.05em] font-sans font-bold transition-colors border ${
-                  i === activeAssetIndex
+                  validationErrors[a.id]
+                    ? "border-destructive bg-destructive/10 text-destructive"
+                    : i === activeAssetIndex
                     ? "border-copper bg-copper/20 text-copper"
                     : "border-border text-muted-foreground hover:border-copper/40"
                 }`}
