@@ -86,9 +86,9 @@ const AssetIntake = () => {
   const [submitting, setSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
 
-  const validateAssets = (): boolean => {
+  const validateAssets = (): Record<string, string[]> => {
     const errors: Record<string, string[]> = {};
-    assets.forEach((a, i) => {
+    assets.forEach((a) => {
       const assetErrors: string[] = [];
       if (!a.projectDescriptor.trim()) assetErrors.push("Project Descriptor is required");
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
@@ -97,7 +97,7 @@ const AssetIntake = () => {
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleFinalize = async () => {
@@ -105,8 +105,9 @@ const AssetIntake = () => {
       navigate("/auth");
       return;
     }
-    if (!validateAssets()) {
-      const firstErrorAssetId = Object.keys(validationErrors)[0];
+    const errors = validateAssets();
+    if (Object.keys(errors).length > 0) {
+      const firstErrorAssetId = Object.keys(errors)[0];
       const errorIndex = assets.findIndex(a => a.id === firstErrorAssetId);
       if (errorIndex >= 0) setActiveAssetIndex(errorIndex);
       toast.error("Please fill in all required fields before proceeding");
