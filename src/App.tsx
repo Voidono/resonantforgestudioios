@@ -29,6 +29,7 @@ import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminHub from "./pages/AdminHub";
 import AssetProductionForge from "./pages/AssetProductionForge";
+import AdminDeveloperRoster from "./pages/AdminDeveloperRoster";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
