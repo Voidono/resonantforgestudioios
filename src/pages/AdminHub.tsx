@@ -22,6 +22,8 @@ const modules = [
     status: "CORE_AUTH: GRANTED",
     button: "FORGE INTEGRATION",
     route: "/developer-hub",
+    secondaryButton: "MANAGE ROSTER",
+    secondaryRoute: "/admin-operations/developer-roster",
   },
   {
     icon: Sparkles,
