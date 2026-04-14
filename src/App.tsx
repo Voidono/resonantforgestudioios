@@ -67,6 +67,7 @@ const App = () => (
             <Route path="/admin" element={<AdminHub />} />
             <Route path="/admin-operations" element={<AdminDashboard />} />
             <Route path="/admin-operations/forge" element={<AssetProductionForge />} />
+            <Route path="/admin-operations/developer-roster" element={<AdminDeveloperRoster />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
