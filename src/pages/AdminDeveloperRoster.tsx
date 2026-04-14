@@ -1,35 +1,95 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRole } from "@/hooks/useRole";
+import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 import DeveloperCard from "@/components/developer/DeveloperCard";
+import DeveloperFormDialog from "@/components/developer/DeveloperFormDialog";
 import type { Developer } from "@/components/developer/DeveloperCard";
 
-const DeveloperRoster = () => {
+const AdminDeveloperRoster = () => {
   const navigate = useNavigate();
+  const { hasAdminAccess, loading: roleLoading } = useRole();
+  const { toast } = useToast();
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDev, setEditingDev] = useState<Developer | null>(null);
 
   useEffect(() => {
-    const fetchDevelopers = async () => {
-      const { data, error } = await supabase
-        .from("developers")
-        .select("*")
-        .order("sort_order");
-      if (!error && data) {
-        setDevelopers(data.map((d) => ({
-          ...d,
-          pipeline_data: d.pipeline_data as unknown as Developer["pipeline_data"],
-        })));
-      }
-      setLoading(false);
-    };
-    fetchDevelopers();
-  }, []);
+    if (!roleLoading && !hasAdminAccess) {
+      navigate("/dashboard");
+    }
+  }, [roleLoading, hasAdminAccess, navigate]);
+
+  const fetchDevelopers = async () => {
+    const { data, error } = await supabase
+      .from("developers")
+      .select("*")
+      .order("sort_order");
+    if (!error && data) {
+      setDevelopers(data.map((d) => ({
+        ...d,
+        pipeline_data: d.pipeline_data as unknown as Developer["pipeline_data"],
+      })));
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchDevelopers(); }, []);
 
   const systemsDevs = developers.filter((d) => d.category === "systems");
   const pipelineDevs = developers.filter((d) => d.category === "pipeline");
+
+  const handleSave = async (data: Omit<Developer, "id" | "sort_order"> & { id?: string; sort_order?: number }) => {
+    if (data.id) {
+      const { error } = await supabase.from("developers").update({
+        name: data.name,
+        role: data.role,
+        description: data.description,
+        category: data.category,
+        pipeline_data: data.pipeline_data as any,
+      }).eq("id", data.id);
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    } else {
+      const maxOrder = developers.length > 0 ? Math.max(...developers.map((d) => d.sort_order)) + 1 : 0;
+      const { error } = await supabase.from("developers").insert({
+        name: data.name,
+        role: data.role,
+        description: data.description,
+        category: data.category,
+        pipeline_data: data.pipeline_data as any,
+        sort_order: maxOrder,
+      });
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    }
+    setDialogOpen(false);
+    setEditingDev(null);
+    fetchDevelopers();
+    toast({ title: data.id ? "Developer updated" : "Developer added" });
+  };
+
+  const handleDelete = async (dev: Developer) => {
+    if (!confirm(`Remove ${dev.name} from the roster?`)) return;
+    const { error } = await supabase.from("developers").delete().eq("id", dev.id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    fetchDevelopers();
+    toast({ title: "Developer removed" });
+  };
+
+  const handleEdit = (dev: Developer) => {
+    setEditingDev(dev);
+    setDialogOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingDev(null);
+    setDialogOpen(true);
+  };
+
+  if (roleLoading) return null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -37,15 +97,18 @@ const DeveloperRoster = () => {
 
       <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full">
         <button
-          onClick={() => navigate("/developer-hub")}
+          onClick={() => navigate("/admin")}
           className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase font-sans font-medium mb-10 hover:opacity-80 transition-opacity"
           style={{ color: "hsl(var(--copper))" }}
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
+          Back to Admin
         </button>
 
         <div className="text-center mb-16">
+          <p className="text-[10px] tracking-[0.2em] uppercase font-sans font-bold mb-2" style={{ color: "hsl(var(--copper))" }}>
+            ADMIN MANAGEMENT
+          </p>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-wide text-foreground mb-4">
             CATEGORIZED ROSTER
           </h1>
@@ -69,7 +132,7 @@ const DeveloperRoster = () => {
                 </div>
                 <div className="h-px w-full bg-border mb-4" />
                 {systemsDevs.map((dev) => (
-                  <DeveloperCard key={dev.id} dev={dev} />
+                  <DeveloperCard key={dev.id} dev={dev} isAdmin onEdit={handleEdit} onDelete={handleDelete} />
                 ))}
               </div>
 
@@ -88,9 +151,18 @@ const DeveloperRoster = () => {
                 </p>
                 <div className="h-px w-full bg-border mb-4" />
                 {pipelineDevs.map((dev) => (
-                  <DeveloperCard key={dev.id} dev={dev} />
+                  <DeveloperCard key={dev.id} dev={dev} isAdmin onEdit={handleEdit} onDelete={handleDelete} />
                 ))}
               </div>
+
+              <button
+                onClick={handleAdd}
+                className="mt-6 flex items-center gap-2 px-5 py-3 text-xs tracking-[0.15em] uppercase font-sans font-bold rounded border transition-opacity hover:opacity-90"
+                style={{ borderColor: "hsl(var(--copper))", color: "hsl(var(--copper))" }}
+              >
+                <Plus className="w-4 h-4" />
+                ADD DEVELOPER
+              </button>
             </div>
 
             <div className="lg:col-span-1">
@@ -125,9 +197,16 @@ const DeveloperRoster = () => {
         )}
       </section>
 
+      <DeveloperFormDialog
+        open={dialogOpen}
+        onOpenChange={(open) => { setDialogOpen(open); if (!open) setEditingDev(null); }}
+        developer={editingDev}
+        onSave={handleSave}
+      />
+
       <Footer />
     </div>
   );
 };
 
-export default DeveloperRoster;
+export default AdminDeveloperRoster;

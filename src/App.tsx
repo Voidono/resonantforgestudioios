@@ -29,6 +29,7 @@ import SystemsAnalysisConfirmation from "./pages/SystemsAnalysisConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminHub from "./pages/AdminHub";
 import AssetProductionForge from "./pages/AssetProductionForge";
+import AdminDeveloperRoster from "./pages/AdminDeveloperRoster";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/admin" element={<AdminHub />} />
             <Route path="/admin-operations" element={<AdminDashboard />} />
             <Route path="/admin-operations/forge" element={<AssetProductionForge />} />
+            <Route path="/admin-operations/developer-roster" element={<AdminDeveloperRoster />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
