@@ -1,19 +1,28 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRole } from "@/hooks/useRole";
+import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 import DeveloperCard from "@/components/developer/DeveloperCard";
+import DeveloperFormDialog from "@/components/developer/DeveloperFormDialog";
 import type { Developer } from "@/components/developer/DeveloperCard";
 
-const DeveloperRoster = () => {
+const AdminDeveloperRoster = () => {
   const navigate = useNavigate();
-  const { hasAdminAccess } = useRole();
+  const { hasAdminAccess, loading: roleLoading } = useRole();
   const { toast } = useToast();
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDev, setEditingDev] = useState<Developer | null>(null);
+
+  useEffect(() => {
+    if (!roleLoading && !hasAdminAccess) {
+      navigate("/dashboard");
+    }
+  }, [roleLoading, hasAdminAccess, navigate]);
 
   const fetchDevelopers = async () => {
     const { data, error } = await supabase
@@ -80,21 +89,26 @@ const DeveloperRoster = () => {
     setDialogOpen(true);
   };
 
+  if (roleLoading) return null;
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="w-full h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent mt-[72px]" />
 
       <section className="flex-1 px-4 md:px-8 py-12 md:py-16 max-w-6xl mx-auto w-full">
         <button
-          onClick={() => navigate("/developer-hub")}
+          onClick={() => navigate("/admin")}
           className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase font-sans font-medium mb-10 hover:opacity-80 transition-opacity"
           style={{ color: "hsl(var(--copper))" }}
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
+          Back to Admin
         </button>
 
         <div className="text-center mb-16">
+          <p className="text-[10px] tracking-[0.2em] uppercase font-sans font-bold mb-2" style={{ color: "hsl(var(--copper))" }}>
+            ADMIN MANAGEMENT
+          </p>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-wide text-foreground mb-4">
             CATEGORIZED ROSTER
           </h1>
@@ -109,7 +123,6 @@ const DeveloperRoster = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              {/* Systems Analysis & Architecture */}
               <div className="mb-10">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base" style={{ color: "hsl(var(--copper))" }}>⚙</span>
@@ -119,11 +132,10 @@ const DeveloperRoster = () => {
                 </div>
                 <div className="h-px w-full bg-border mb-4" />
                 {systemsDevs.map((dev) => (
-                  <DeveloperCard key={dev.id} dev={dev} isAdmin={hasAdminAccess} onEdit={handleEdit} onDelete={handleDelete} />
+                  <DeveloperCard key={dev.id} dev={dev} isAdmin onEdit={handleEdit} onDelete={handleDelete} />
                 ))}
               </div>
 
-              {/* Asset Production Pipeline */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base" style={{ color: "hsl(var(--copper))" }}>⚙</span>
@@ -139,23 +151,20 @@ const DeveloperRoster = () => {
                 </p>
                 <div className="h-px w-full bg-border mb-4" />
                 {pipelineDevs.map((dev) => (
-                  <DeveloperCard key={dev.id} dev={dev} isAdmin={hasAdminAccess} onEdit={handleEdit} onDelete={handleDelete} />
+                  <DeveloperCard key={dev.id} dev={dev} isAdmin onEdit={handleEdit} onDelete={handleDelete} />
                 ))}
               </div>
 
-              {hasAdminAccess && (
-                <button
-                  onClick={handleAdd}
-                  className="mt-6 flex items-center gap-2 px-5 py-3 text-xs tracking-[0.15em] uppercase font-sans font-bold rounded border transition-opacity hover:opacity-90"
-                  style={{ borderColor: "hsl(var(--copper))", color: "hsl(var(--copper))" }}
-                >
-                  <Plus className="w-4 h-4" />
-                  ADD DEVELOPER
-                </button>
-              )}
+              <button
+                onClick={handleAdd}
+                className="mt-6 flex items-center gap-2 px-5 py-3 text-xs tracking-[0.15em] uppercase font-sans font-bold rounded border transition-opacity hover:opacity-90"
+                style={{ borderColor: "hsl(var(--copper))", color: "hsl(var(--copper))" }}
+              >
+                <Plus className="w-4 h-4" />
+                ADD DEVELOPER
+              </button>
             </div>
 
-            {/* Recruitment sidebar */}
             <div className="lg:col-span-1">
               <div className="border border-border rounded-lg bg-card/60 backdrop-blur-sm p-6 sticky top-24">
                 <div className="flex items-center gap-2 mb-6">
@@ -200,4 +209,4 @@ const DeveloperRoster = () => {
   );
 };
 
-export default DeveloperRoster;
+export default AdminDeveloperRoster;
