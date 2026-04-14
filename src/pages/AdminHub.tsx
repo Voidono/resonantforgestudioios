@@ -168,6 +168,15 @@ const AdminHub = () => {
                 >
                   {mod.button}
                 </button>
+                {mod.secondaryButton && mod.secondaryRoute && (
+                  <button
+                    onClick={() => navigate(mod.secondaryRoute!)}
+                    className="w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium border rounded transition-colors"
+                    style={{ borderColor: "hsl(var(--copper))", color: "hsl(var(--copper))" }}
+                  >
+                    {mod.secondaryButton}
+                  </button>
+                )}
               </div>
             </div>
           ))}
