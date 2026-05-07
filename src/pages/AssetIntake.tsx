@@ -10,7 +10,33 @@ import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const categories = ["ENVIRONMENT", "CHARACTER", "CREATURE", "MISC"];
-const pipelineStages = ["BLOCKOUT", "HIGH POLY", "RETOPO / UV", "TEXTURING"];
+
+type RequirementType = "HIGH_POLY" | "RUB" | "TEXTURE" | "FULL" | "UNSURE" | "QUOTE";
+
+const requirementOptions: { key: RequirementType; label: string; desc: string }[] = [
+  { key: "HIGH_POLY", label: "HIGH POLY", desc: "SCULPT / HERO MESH ONLY" },
+  { key: "RUB", label: "RETOPO / UV / BAKE", desc: "REQUIRES EXISTING HIGH POLY" },
+  { key: "TEXTURE", label: "TEXTURE", desc: "REQUIRES EXISTING HIGH POLY" },
+  { key: "FULL", label: "FULL GAME-READY ASSET", desc: "END-TO-END PRODUCTION" },
+  { key: "UNSURE", label: "UNSURE / HELP ME DECIDE", desc: "FLAGGED FOR MANUAL REVIEW" },
+  { key: "QUOTE", label: "SIMPLE QUOTE / CONTACT", desc: "ROUTE TO CONTACT TERMINAL" },
+];
+
+// Map a requirement selection to internal pipeline stage flags
+const stagesForRequirement = (req: RequirementType | null): Record<string, boolean> => {
+  switch (req) {
+    case "HIGH_POLY":
+      return { "HIGH POLY": true };
+    case "RUB":
+      return { "HIGH POLY": true, "RETOPO / UV": true };
+    case "TEXTURE":
+      return { "HIGH POLY": true, "TEXTURING": true };
+    case "FULL":
+      return { BLOCKOUT: true, "HIGH POLY": true, "RETOPO / UV": true, TEXTURING: true };
+    default:
+      return {};
+  }
+};
 
 type AssetSize = "S" | "M" | "L" | "G";
 
