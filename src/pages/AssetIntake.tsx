@@ -435,7 +435,6 @@ const AssetIntake = () => {
               )}
             </div>
           </div>
-          </div>
 
           {/* RIGHT COLUMN */}
           <div className="space-y-8">
