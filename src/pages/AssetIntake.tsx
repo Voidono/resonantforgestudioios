@@ -122,7 +122,6 @@ const AssetIntake = () => {
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
       if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
       if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
-      if (!a.requirement) assetErrors.push("Project Requirement is required");
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
@@ -381,59 +380,62 @@ const AssetIntake = () => {
               </div>
             </div>
 
-            {/* Required Boxes — Project Requirement */}
+            {/* Pipeline Stages */}
             <div>
               <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
                 <div className="w-2 h-2 rounded-sm bg-copper" />
-                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">PROJECT REQUIREMENT</span>
+                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">PIPELINE STAGES</span>
               </div>
-              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">SELECT ONE — DEFINES PIPELINE SCOPE</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {requirementOptions.map((opt) => {
-                  const active = asset.requirement === opt.key;
-                  return (
-                    <button
-                      key={opt.key}
-                      onClick={() => {
-                        if (opt.key === "QUOTE") {
-                          navigate("/contact-terminal");
-                          return;
-                        }
-                        const stages = stagesForRequirement(opt.key);
-                        updateAsset({
-                          requirement: opt.key,
-                          stageToggles: stages,
-                          fullProduction: opt.key === "FULL",
-                          rigging: opt.key === "FULL" ? asset.rigging : false,
-                          animation: opt.key === "FULL" ? asset.animation : false,
-                          vfx: opt.key === "FULL" ? asset.vfx : false,
-                        });
-                        setValidationErrors(prev => {
-                          const next = { ...prev };
-                          if (next[asset.id]) {
-                            next[asset.id] = next[asset.id].filter(er => !er.includes("Project Requirement"));
-                            if (next[asset.id].length === 0) delete next[asset.id];
-                          }
-                          return next;
-                        });
-                      }}
-                      className={`text-left p-4 rounded border transition-colors ${
-                        active
-                          ? "border-copper/60 bg-copper/10"
-                          : validationErrors[asset.id]?.some(e => e.includes("Project Requirement"))
-                          ? "border-destructive/50 hover:border-destructive/70"
-                          : "border-border hover:border-copper/30"
-                      }`}
-                    >
-                      <h3 className={`text-sm font-serif font-bold tracking-wider ${active ? "text-copper" : "text-foreground"}`}>{opt.label}</h3>
-                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mt-1">{opt.desc}</p>
-                    </button>
-                  );
-                })}
+              <div className="border border-border rounded-lg bg-card/40 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">FULL ASSET PRODUCTION</h3>
+                    <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">END-TO-END ASSET WORKFLOW ENGAGEMENT</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={asset.fullProduction}
+                      onCheckedChange={(v) => updateAsset({
+                        fullProduction: v,
+                        stageToggles: v ? stagesForRequirement("FULL") : {},
+                      })}
+                    />
+                    <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
+                  </div>
+                </div>
+                <div className="space-y-0">
+                  {[
+                    { label: "BLOCKOUT", key: "BLOCKOUT" },
+                    { label: "HIGH POLY", key: "HIGH POLY" },
+                    { label: "RETOPO / UV / BAKE", key: "RETOPO / UV" },
+                    { label: "TEXTURE", key: "TEXTURING" },
+                    { label: "UNSURE / HELP ME DECIDE", key: "_UNSURE" },
+                    { label: "SIMPLE QUOTE / CONTACT DIRECTLY", key: "_QUOTE" },
+                  ].map((stage) => {
+                    const isAction = stage.key === "_QUOTE";
+                    const checked = asset.fullProduction || asset.stageToggles[stage.key] || false;
+                    return (
+                      <div key={stage.key} className="flex items-center justify-between py-3 border-t border-border">
+                        <span className="text-xs font-sans font-medium text-muted-foreground">{stage.label}</span>
+                        <Switch
+                          checked={checked}
+                          disabled={asset.fullProduction && !stage.key.startsWith("_")}
+                          onCheckedChange={(v) => {
+                            if (isAction && v) {
+                              navigate("/contact-terminal");
+                              return;
+                            }
+                            updateAsset({ stageToggles: { ...asset.stageToggles, [stage.key]: v } });
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                {asset.stageToggles["_UNSURE"] && (
+                  <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-copper mt-3">⚑ MARKED FOR MANUAL REVIEW BY STUDIO LEAD</p>
+                )}
               </div>
-              {asset.requirement === "UNSURE" && (
-                <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-copper mt-3">⚑ MARKED FOR MANUAL REVIEW BY STUDIO LEAD</p>
-              )}
             </div>
           </div>
 
