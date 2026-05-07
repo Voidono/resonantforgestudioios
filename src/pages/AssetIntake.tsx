@@ -56,6 +56,7 @@ interface AssetData {
   fullProduction: boolean;
   stageToggles: Record<string, boolean>;
   iterations: number[];
+  requirement: RequirementType | null;
 }
 
 const createDefaultAsset = (id: string, size: AssetSize): AssetData => ({
@@ -74,6 +75,7 @@ const createDefaultAsset = (id: string, size: AssetSize): AssetData => ({
   fullProduction: false,
   stageToggles: {},
   iterations: [0],
+  requirement: null,
 });
 
 const sizeLabels: Record<AssetSize, string> = { S: "SMALL", M: "MEDIUM", L: "LARGE", G: "GAME-READY" };
