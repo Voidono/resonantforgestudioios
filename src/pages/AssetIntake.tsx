@@ -455,45 +455,49 @@ const AssetIntake = () => {
               </div>
             </div>
 
-            {/* Extended Production */}
-            <div>
-              <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
-                <div className="w-2 h-2 rounded-sm bg-copper" />
-                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">EXTENDED PRODUCTION</span>
-              </div>
-              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">ADDITIONAL MODULE CONFIGURATION</p>
-              <div className="space-y-3">
-                {([
-                  { label: "RIGGING", desc: "COMPLEX SKELETAL SYSTEMS", key: "rigging" as const },
-                  { label: "ANIMATION", desc: "MOVEMENT & CYCLES", key: "animation" as const },
-                  { label: "VFX", desc: "SHADERS & PARTICLES", key: "vfx" as const },
-                ] as const).map((mod) => (
-                  <div key={mod.label} className="border border-border rounded-lg bg-card/40 p-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">{mod.label}</h3>
-                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">{mod.desc}</p>
-                    </div>
-                    <Switch checked={asset[mod.key]} onCheckedChange={(v) => updateAsset({ [mod.key]: v })} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Iteration Allocation */}
-            <div className="border border-border rounded-lg bg-card/40 p-5">
-              <div className="flex items-center justify-between mb-4">
+            {/* Extended Production — only when Full Game-Ready */}
+            {asset.requirement === "FULL" && (
+              <>
                 <div>
-                  <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">ITERATION ALLOCATION</h3>
-                  <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">REFINEMENT CYCLES PER STAGE</p>
+                  <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
+                    <div className="w-2 h-2 rounded-sm bg-copper" />
+                    <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">EXTENDED PRODUCTION</span>
+                  </div>
+                  <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">ADDITIONAL MODULE CONFIGURATION</p>
+                  <div className="space-y-3">
+                    {([
+                      { label: "RIGGING", desc: "COMPLEX SKELETAL SYSTEMS", key: "rigging" as const },
+                      { label: "ANIMATION", desc: "MOVEMENT & CYCLES", key: "animation" as const },
+                      { label: "VFX", desc: "SHADERS & PARTICLES", key: "vfx" as const },
+                    ] as const).map((mod) => (
+                      <div key={mod.label} className="border border-border rounded-lg bg-card/40 p-4 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">{mod.label}</h3>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">{mod.desc}</p>
+                        </div>
+                        <Switch checked={asset[mod.key]} onCheckedChange={(v) => updateAsset({ [mod.key]: v })} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <span className="text-xl font-serif font-bold text-foreground">{String(asset.iterations[0]).padStart(2, "0")} UNITS</span>
-              </div>
-              <Slider value={asset.iterations} onValueChange={(v) => updateAsset({ iterations: v })} max={3} min={0} step={1} className="w-full" />
-              <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-muted-foreground font-sans">MIN_01</span>
-                <span className="text-[9px] text-muted-foreground font-sans">MAX_03</span>
-              </div>
-            </div>
+
+                {/* Iteration Allocation */}
+                <div className="border border-border rounded-lg bg-card/40 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">ITERATION ALLOCATION</h3>
+                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">REFINEMENT CYCLES PER STAGE</p>
+                    </div>
+                    <span className="text-xl font-serif font-bold text-foreground">{String(asset.iterations[0]).padStart(2, "0")} UNITS</span>
+                  </div>
+                  <Slider value={asset.iterations} onValueChange={(v) => updateAsset({ iterations: v })} max={3} min={0} step={1} className="w-full" />
+                  <div className="flex justify-between mt-1">
+                    <span className="text-[9px] text-muted-foreground font-sans">MIN_01</span>
+                    <span className="text-[9px] text-muted-foreground font-sans">MAX_03</span>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Estimation */}
             <div className="border border-border rounded-lg bg-card/40 p-5 text-center">
