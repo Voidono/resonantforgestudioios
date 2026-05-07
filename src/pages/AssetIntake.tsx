@@ -122,7 +122,6 @@ const AssetIntake = () => {
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
       if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
       if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
-      if (!a.requirement) assetErrors.push("Project Requirement is required");
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
