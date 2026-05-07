@@ -10,7 +10,33 @@ import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
 const categories = ["ENVIRONMENT", "CHARACTER", "CREATURE", "MISC"];
-const pipelineStages = ["BLOCKOUT", "HIGH POLY", "RETOPO / UV", "TEXTURING"];
+
+type RequirementType = "HIGH_POLY" | "RUB" | "TEXTURE" | "FULL" | "UNSURE" | "QUOTE";
+
+const requirementOptions: { key: RequirementType; label: string; desc: string }[] = [
+  { key: "HIGH_POLY", label: "HIGH POLY", desc: "SCULPT / HERO MESH ONLY" },
+  { key: "RUB", label: "RETOPO / UV / BAKE", desc: "REQUIRES EXISTING HIGH POLY" },
+  { key: "TEXTURE", label: "TEXTURE", desc: "REQUIRES EXISTING HIGH POLY" },
+  { key: "FULL", label: "FULL GAME-READY ASSET", desc: "END-TO-END PRODUCTION" },
+  { key: "UNSURE", label: "UNSURE / HELP ME DECIDE", desc: "FLAGGED FOR MANUAL REVIEW" },
+  { key: "QUOTE", label: "SIMPLE QUOTE / CONTACT", desc: "ROUTE TO CONTACT TERMINAL" },
+];
+
+// Map a requirement selection to internal pipeline stage flags
+const stagesForRequirement = (req: RequirementType | null): Record<string, boolean> => {
+  switch (req) {
+    case "HIGH_POLY":
+      return { "HIGH POLY": true };
+    case "RUB":
+      return { "HIGH POLY": true, "RETOPO / UV": true };
+    case "TEXTURE":
+      return { "HIGH POLY": true, "TEXTURING": true };
+    case "FULL":
+      return { BLOCKOUT: true, "HIGH POLY": true, "RETOPO / UV": true, TEXTURING: true };
+    default:
+      return {};
+  }
+};
 
 type AssetSize = "S" | "M" | "L" | "G";
 
@@ -30,6 +56,7 @@ interface AssetData {
   fullProduction: boolean;
   stageToggles: Record<string, boolean>;
   iterations: number[];
+  requirement: RequirementType | null;
 }
 
 const createDefaultAsset = (id: string, size: AssetSize): AssetData => ({
@@ -48,6 +75,7 @@ const createDefaultAsset = (id: string, size: AssetSize): AssetData => ({
   fullProduction: false,
   stageToggles: {},
   iterations: [0],
+  requirement: null,
 });
 
 const sizeLabels: Record<AssetSize, string> = { S: "SMALL", M: "MEDIUM", L: "LARGE", G: "GAME-READY" };
@@ -94,6 +122,7 @@ const AssetIntake = () => {
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
       if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
       if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
+      if (!a.requirement) assetErrors.push("Project Requirement is required");
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
@@ -151,7 +180,7 @@ const AssetIntake = () => {
         animation: a.animation,
         vfx: a.vfx,
         full_production: a.fullProduction,
-        stage_toggles: a.stageToggles,
+        stage_toggles: { ...a.stageToggles, _requirement: a.requirement, _manual_review: a.requirement === "UNSURE" },
         iterations: a.iterations,
       }));
 
@@ -352,36 +381,59 @@ const AssetIntake = () => {
               </div>
             </div>
 
-            {/* Pipeline Stages */}
+            {/* Required Boxes — Project Requirement */}
             <div>
               <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
                 <div className="w-2 h-2 rounded-sm bg-copper" />
-                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">PIPELINE STAGES</span>
+                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">PROJECT REQUIREMENT</span>
               </div>
-              <div className="border border-border rounded-lg bg-card/40 p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">FULL ASSET PRODUCTION</h3>
-                    <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">END-TO-END ASSET WORKFLOW ENGAGEMENT</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Switch checked={asset.fullProduction} onCheckedChange={(v) => updateAsset({ fullProduction: v })} />
-                    <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
-                  </div>
-                </div>
-                <div className="space-y-0">
-                  {pipelineStages.map((stage) => (
-                    <div key={stage} className="flex items-center justify-between py-3 border-t border-border">
-                      <span className="text-xs font-sans font-medium text-muted-foreground">{stage}</span>
-                      <Switch
-                        checked={asset.fullProduction || asset.stageToggles[stage] || false}
-                        onCheckedChange={(v) => updateAsset({ stageToggles: { ...asset.stageToggles, [stage]: v } })}
-                        disabled={asset.fullProduction}
-                      />
-                    </div>
-                  ))}
-                </div>
+              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">SELECT ONE — DEFINES PIPELINE SCOPE</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {requirementOptions.map((opt) => {
+                  const active = asset.requirement === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      onClick={() => {
+                        if (opt.key === "QUOTE") {
+                          navigate("/contact-terminal");
+                          return;
+                        }
+                        const stages = stagesForRequirement(opt.key);
+                        updateAsset({
+                          requirement: opt.key,
+                          stageToggles: stages,
+                          fullProduction: opt.key === "FULL",
+                          rigging: opt.key === "FULL" ? asset.rigging : false,
+                          animation: opt.key === "FULL" ? asset.animation : false,
+                          vfx: opt.key === "FULL" ? asset.vfx : false,
+                        });
+                        setValidationErrors(prev => {
+                          const next = { ...prev };
+                          if (next[asset.id]) {
+                            next[asset.id] = next[asset.id].filter(er => !er.includes("Project Requirement"));
+                            if (next[asset.id].length === 0) delete next[asset.id];
+                          }
+                          return next;
+                        });
+                      }}
+                      className={`text-left p-4 rounded border transition-colors ${
+                        active
+                          ? "border-copper/60 bg-copper/10"
+                          : validationErrors[asset.id]?.some(e => e.includes("Project Requirement"))
+                          ? "border-destructive/50 hover:border-destructive/70"
+                          : "border-border hover:border-copper/30"
+                      }`}
+                    >
+                      <h3 className={`text-sm font-serif font-bold tracking-wider ${active ? "text-copper" : "text-foreground"}`}>{opt.label}</h3>
+                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mt-1">{opt.desc}</p>
+                    </button>
+                  );
+                })}
               </div>
+              {asset.requirement === "UNSURE" && (
+                <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-copper mt-3">⚑ MARKED FOR MANUAL REVIEW BY STUDIO LEAD</p>
+              )}
             </div>
           </div>
 
@@ -404,45 +456,49 @@ const AssetIntake = () => {
               </div>
             </div>
 
-            {/* Extended Production */}
-            <div>
-              <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
-                <div className="w-2 h-2 rounded-sm bg-copper" />
-                <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">EXTENDED PRODUCTION</span>
-              </div>
-              <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">ADDITIONAL MODULE CONFIGURATION</p>
-              <div className="space-y-3">
-                {([
-                  { label: "RIGGING", desc: "COMPLEX SKELETAL SYSTEMS", key: "rigging" as const },
-                  { label: "ANIMATION", desc: "MOVEMENT & CYCLES", key: "animation" as const },
-                  { label: "VFX", desc: "SHADERS & PARTICLES", key: "vfx" as const },
-                ] as const).map((mod) => (
-                  <div key={mod.label} className="border border-border rounded-lg bg-card/40 p-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">{mod.label}</h3>
-                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">{mod.desc}</p>
-                    </div>
-                    <Switch checked={asset[mod.key]} onCheckedChange={(v) => updateAsset({ [mod.key]: v })} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Iteration Allocation */}
-            <div className="border border-border rounded-lg bg-card/40 p-5">
-              <div className="flex items-center justify-between mb-4">
+            {/* Extended Production — only when Full Game-Ready */}
+            {asset.requirement === "FULL" && (
+              <>
                 <div>
-                  <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">ITERATION ALLOCATION</h3>
-                  <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">REFINEMENT CYCLES PER STAGE</p>
+                  <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
+                    <div className="w-2 h-2 rounded-sm bg-copper" />
+                    <span className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground">EXTENDED PRODUCTION</span>
+                  </div>
+                  <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground mb-4">ADDITIONAL MODULE CONFIGURATION</p>
+                  <div className="space-y-3">
+                    {([
+                      { label: "RIGGING", desc: "COMPLEX SKELETAL SYSTEMS", key: "rigging" as const },
+                      { label: "ANIMATION", desc: "MOVEMENT & CYCLES", key: "animation" as const },
+                      { label: "VFX", desc: "SHADERS & PARTICLES", key: "vfx" as const },
+                    ] as const).map((mod) => (
+                      <div key={mod.label} className="border border-border rounded-lg bg-card/40 p-4 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">{mod.label}</h3>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">{mod.desc}</p>
+                        </div>
+                        <Switch checked={asset[mod.key]} onCheckedChange={(v) => updateAsset({ [mod.key]: v })} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <span className="text-xl font-serif font-bold text-foreground">{String(asset.iterations[0]).padStart(2, "0")} UNITS</span>
-              </div>
-              <Slider value={asset.iterations} onValueChange={(v) => updateAsset({ iterations: v })} max={3} min={0} step={1} className="w-full" />
-              <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-muted-foreground font-sans">MIN_01</span>
-                <span className="text-[9px] text-muted-foreground font-sans">MAX_03</span>
-              </div>
-            </div>
+
+                {/* Iteration Allocation */}
+                <div className="border border-border rounded-lg bg-card/40 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-sm font-serif font-bold tracking-wider text-foreground">ITERATION ALLOCATION</h3>
+                      <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">REFINEMENT CYCLES PER STAGE</p>
+                    </div>
+                    <span className="text-xl font-serif font-bold text-foreground">{String(asset.iterations[0]).padStart(2, "0")} UNITS</span>
+                  </div>
+                  <Slider value={asset.iterations} onValueChange={(v) => updateAsset({ iterations: v })} max={3} min={0} step={1} className="w-full" />
+                  <div className="flex justify-between mt-1">
+                    <span className="text-[9px] text-muted-foreground font-sans">MIN_01</span>
+                    <span className="text-[9px] text-muted-foreground font-sans">MAX_03</span>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Estimation */}
             <div className="border border-border rounded-lg bg-card/40 p-5 text-center">
