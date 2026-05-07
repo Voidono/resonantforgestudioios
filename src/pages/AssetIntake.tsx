@@ -180,7 +180,7 @@ const AssetIntake = () => {
         animation: a.animation,
         vfx: a.vfx,
         full_production: a.fullProduction,
-        stage_toggles: a.stageToggles,
+        stage_toggles: { ...a.stageToggles, _requirement: a.requirement, _manual_review: a.requirement === "UNSURE" },
         iterations: a.iterations,
       }));
 
