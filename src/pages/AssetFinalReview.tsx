@@ -150,6 +150,41 @@ const AssetFinalReview = () => {
     return { finalValue, hours: hours * (1 + adj), MMC, scopeValue, polyScore, finalTri };
   }, [hpEnabled, hpAssetType, hpLength, hpWidth, hpForm, hpDetail, hpPrecision, hpTriCount, hpTriUnsure, hpSupporting, hpPartsTier]);
 
+  // ====== Section 11: Retopo / UV / Bake Intake ======
+  const [rubEnabled, setRubEnabled] = useState(false);
+  const [rubLowTri, setRubLowTri] = useState<string>("");
+  const [rubTopology, setRubTopology] = useState<"GAME" | "CLEAN" | "ALLQUADS">("GAME");
+  const [rubDeformation, setRubDeformation] = useState<"STATIC" | "MECH" | "ORGANIC" | "CHAR">("STATIC");
+  const [rubBakeQuality, setRubBakeQuality] = useState<"STD" | "HIGH" | "VHIGH" | "HERO">("STD");
+  const [rubUvAssetType, setRubUvAssetType] = useState<"SIMPLE" | "STANDARD" | "TECH" | "ORGANIC">("STANDARD");
+  const [rubUvReq, setRubUvReq] = useState<"BASIC" | "CLEAN" | "TEXEL" | "UDIM">("BASIC");
+  const [rubSeam, setRubSeam] = useState<"STD" | "REDUCED" | "KEY" | "TILING">("STD");
+
+  const rubEstimate = useMemo(() => {
+    if (!rubEnabled || !hpEstimate) return null;
+    const hpBase = hpEstimate.finalValue;
+    // Retopo Factor
+    const lowTri = Math.max(100, parseInt(rubLowTri) || Math.max(2000, Math.round(hpEstimate.finalTri / 10)));
+    const ratio = hpEstimate.finalTri / lowTri;
+    const reduction = ratio <= 3 ? 0 : ratio <= 8 ? 0.05 : ratio <= 15 ? 0.10 : ratio <= 25 ? 0.20 : 0.35;
+    const topology = rubTopology === "GAME" ? 0 : rubTopology === "CLEAN" ? 0.08 : 0.18;
+    const deformation = rubDeformation === "STATIC" ? 0 : rubDeformation === "MECH" ? 0.06 : rubDeformation === "ORGANIC" ? 0.12 : 0.20;
+    const retopoFactor = 0.25 + reduction + topology + deformation;
+    // UV Factor
+    const uvAsset = rubUvAssetType === "SIMPLE" ? 0 : rubUvAssetType === "STANDARD" ? 0.02 : rubUvAssetType === "TECH" ? 0.05 : 0.06;
+    const uvReq = rubUvReq === "BASIC" ? 0 : rubUvReq === "CLEAN" ? 0.03 : rubUvReq === "TEXEL" ? 0.05 : 0.10;
+    const seam = rubSeam === "STD" ? 0 : rubSeam === "REDUCED" ? 0.03 : rubSeam === "KEY" ? 0.06 : 0.10;
+    const uvFactor = 0.10 + uvAsset + uvReq + seam;
+    // Bake Factor — derive bake risk from HP MMC
+    const mmc = hpEstimate.MMC;
+    const bakeRisk = mmc <= 0.8 ? 0 : mmc <= 1.3 ? 0.05 : mmc <= 1.8 ? 0.10 : mmc <= 2.3 ? 0.20 : 0.35;
+    const bakeQ = rubBakeQuality === "STD" ? 0 : rubBakeQuality === "HIGH" ? 0.05 : rubBakeQuality === "VHIGH" ? 0.10 : 0.20;
+    const bakeFactor = 0.15 + bakeRisk + bakeQ;
+    const finalValue = hpBase * (retopoFactor + uvFactor + bakeFactor);
+    const hours = finalValue / 75;
+    return { finalValue, hours, retopoFactor, uvFactor, bakeFactor, lowTri };
+  }, [rubEnabled, hpEstimate, rubLowTri, rubTopology, rubDeformation, rubBakeQuality, rubUvAssetType, rubUvReq, rubSeam]);
+
 
   const handleSubmitSpecifications = async () => {
     if (!user) {
