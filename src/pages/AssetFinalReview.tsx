@@ -1086,6 +1086,28 @@ const AssetFinalReview = () => {
                 </div>
               )}
 
+              {/* RUB Estimate */}
+              {rubEstimate && (
+                <div className="mb-6 border border-copper/30 rounded-lg bg-copper/5 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper">RETOPO / UV / BAKE</span>
+                    <span className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground">CALCULATED</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">EST. HOURS</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{rubEstimate.hours.toFixed(1)} HRS</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">TARGET LOW POLY</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{rubEstimate.lowTri.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-copper/20">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">RUB VALUE</span>
+                    <span className="text-lg font-serif font-bold text-copper">${rubEstimate.finalValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                  </div>
+                </div>
+              )}
+
               {/* CTA */}
               <button onClick={handleSubmitSpecifications} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
