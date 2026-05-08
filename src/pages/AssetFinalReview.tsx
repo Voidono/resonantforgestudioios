@@ -87,6 +87,70 @@ const AssetFinalReview = () => {
   const [submitting, setSubmitting] = useState(false);
   const specCompleteness = 79;
 
+  // ====== Section 10: High Poly Intake ======
+  const [hpEnabled, setHpEnabled] = useState(false);
+  const [hpAssetType, setHpAssetType] = useState<"SHS" | "THS" | "ORG">("SHS");
+  const [hpLength, setHpLength] = useState<string>("1");
+  const [hpWidth, setHpWidth] = useState<string>("1");
+  const [hpHeight, setHpHeight] = useState<string>("");
+  const [hpForm, setHpForm] = useState<number>(0.6); // shape complexity
+  const [hpDetail, setHpDetail] = useState<number>(0.6); // detail density
+  const [hpPrecision, setHpPrecision] = useState<number>(0.5); // precision
+  const [hpTriCount, setHpTriCount] = useState<string>("");
+  const [hpTriUnsure, setHpTriUnsure] = useState<boolean>(true);
+  const [hpSupporting, setHpSupporting] = useState<"YES" | "NO" | "UNSURE">("UNSURE");
+  const [hpPartsTier, setHpPartsTier] = useState<"FEW" | "MOD" | "MANY" | "VMANY">("MOD");
+
+  const hpEstimate = useMemo(() => {
+    if (!hpEnabled) return null;
+    const L = Math.max(0.1, parseFloat(hpLength) || 1);
+    const W = Math.max(0.1, parseFloat(hpWidth) || 1);
+    const MMC = Math.max(0.4, Math.min(2.6, hpForm + hpDetail + hpPrecision));
+    // Tri Floor
+    const triFloorRaw = 2000 + 73000 * Math.pow(Math.max(0, (MMC - 0.4) / 2.2), 2.2);
+    const triFloor = Math.min(75000, Math.max(2000, triFloorRaw));
+    const roundedMinTri = Math.floor(triFloor / 5000) * 5000;
+    const userTri = hpTriUnsure || !hpTriCount ? roundedMinTri : Math.max(0, parseInt(hpTriCount) || 0);
+    const finalTri = Math.max(userTri, roundedMinTri);
+    const polyScore = Math.min(5, Math.max(1, 1 + ((finalTri - 5000) / 295000) * 4));
+    // Size modifier
+    const footprint = L * W;
+    const footprintMult = Math.min(1.6, Math.max(1.0, 1.0 + ((footprint - 1) / 74) * 0.6));
+    const longest = Math.max(L, W); const shortest = Math.min(L, W);
+    const ratio = longest / shortest;
+    const aspectMult = ratio <= 3 ? 1.0 : ratio <= 6 ? 0.95 : ratio <= 10 ? 0.9 : 0.85;
+    const sizeMod = footprintMult * aspectMult;
+    const adjSizeMod = 0.75 + 0.25 * sizeMod;
+    const scopeValue = polyScore * adjSizeMod;
+    // Asset Type Modifier
+    const ATM = hpAssetType === "SHS" ? 1.0 : hpAssetType === "THS" ? 1.05 + MMC * 0.1 : 1.30 + MMC * 0.3;
+    const mainHp = 150 * Math.pow(scopeValue, 1.15) * MMC * ATM;
+    // Supporting structure
+    let supporting = 0;
+    if (hpAssetType === "ORG") {
+      supporting = 10 * (3 + MMC * 2);
+    } else if (hpSupporting !== "NO") {
+      let count: number;
+      if (hpSupporting === "UNSURE") {
+        count = Math.min(60, Math.max(5, scopeValue * MMC * 6));
+      } else {
+        count = hpPartsTier === "FEW" ? 3 : hpPartsTier === "MOD" ? 10 : hpPartsTier === "MANY" ? 23 : 45;
+      }
+      const dist = { shape: 0.20, simple: 0.30, baseline: 0.35, complex: 0.10, experimental: 0.05 };
+      const vals = { shape: 5, simple: 10, baseline: 15, complex: 25, experimental: 40 };
+      const unique = count * (dist.shape * vals.shape + dist.simple * vals.simple + dist.baseline * vals.baseline + dist.complex * vals.complex + dist.experimental * vals.experimental);
+      const reused = (count * 0.5) * 5;
+      supporting = unique + reused;
+    }
+    const workBase = mainHp + supporting;
+    // Min hour adjustment (assume $75/hr)
+    const hours = workBase / 75;
+    const adj = hours <= 2 ? 0.25 : hours <= 4 ? 0.20 : hours <= 6 ? 0.15 : hours <= 8 ? 0.10 : hours <= 10 ? 0.05 : hours <= 12 ? 0.025 : 0;
+    const finalValue = workBase * (1 + adj);
+    return { finalValue, hours: hours * (1 + adj), MMC, scopeValue, polyScore, finalTri };
+  }, [hpEnabled, hpAssetType, hpLength, hpWidth, hpForm, hpDetail, hpPrecision, hpTriCount, hpTriUnsure, hpSupporting, hpPartsTier]);
+
+
   const handleSubmitSpecifications = async () => {
     if (!user) {
       navigate("/auth");
