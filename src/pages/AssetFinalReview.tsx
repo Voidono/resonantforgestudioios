@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,6 +86,70 @@ const AssetFinalReview = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const specCompleteness = 79;
+
+  // ====== Section 10: High Poly Intake ======
+  const [hpEnabled, setHpEnabled] = useState(false);
+  const [hpAssetType, setHpAssetType] = useState<"SHS" | "THS" | "ORG">("SHS");
+  const [hpLength, setHpLength] = useState<string>("1");
+  const [hpWidth, setHpWidth] = useState<string>("1");
+  const [hpHeight, setHpHeight] = useState<string>("");
+  const [hpForm, setHpForm] = useState<number>(0.6); // shape complexity
+  const [hpDetail, setHpDetail] = useState<number>(0.6); // detail density
+  const [hpPrecision, setHpPrecision] = useState<number>(0.5); // precision
+  const [hpTriCount, setHpTriCount] = useState<string>("");
+  const [hpTriUnsure, setHpTriUnsure] = useState<boolean>(true);
+  const [hpSupporting, setHpSupporting] = useState<"YES" | "NO" | "UNSURE">("UNSURE");
+  const [hpPartsTier, setHpPartsTier] = useState<"FEW" | "MOD" | "MANY" | "VMANY">("MOD");
+
+  const hpEstimate = useMemo(() => {
+    if (!hpEnabled) return null;
+    const L = Math.max(0.1, parseFloat(hpLength) || 1);
+    const W = Math.max(0.1, parseFloat(hpWidth) || 1);
+    const MMC = Math.max(0.4, Math.min(2.6, hpForm + hpDetail + hpPrecision));
+    // Tri Floor
+    const triFloorRaw = 2000 + 73000 * Math.pow(Math.max(0, (MMC - 0.4) / 2.2), 2.2);
+    const triFloor = Math.min(75000, Math.max(2000, triFloorRaw));
+    const roundedMinTri = Math.floor(triFloor / 5000) * 5000;
+    const userTri = hpTriUnsure || !hpTriCount ? roundedMinTri : Math.max(0, parseInt(hpTriCount) || 0);
+    const finalTri = Math.max(userTri, roundedMinTri);
+    const polyScore = Math.min(5, Math.max(1, 1 + ((finalTri - 5000) / 295000) * 4));
+    // Size modifier
+    const footprint = L * W;
+    const footprintMult = Math.min(1.6, Math.max(1.0, 1.0 + ((footprint - 1) / 74) * 0.6));
+    const longest = Math.max(L, W); const shortest = Math.min(L, W);
+    const ratio = longest / shortest;
+    const aspectMult = ratio <= 3 ? 1.0 : ratio <= 6 ? 0.95 : ratio <= 10 ? 0.9 : 0.85;
+    const sizeMod = footprintMult * aspectMult;
+    const adjSizeMod = 0.75 + 0.25 * sizeMod;
+    const scopeValue = polyScore * adjSizeMod;
+    // Asset Type Modifier
+    const ATM = hpAssetType === "SHS" ? 1.0 : hpAssetType === "THS" ? 1.05 + MMC * 0.1 : 1.30 + MMC * 0.3;
+    const mainHp = 150 * Math.pow(scopeValue, 1.15) * MMC * ATM;
+    // Supporting structure
+    let supporting = 0;
+    if (hpAssetType === "ORG") {
+      supporting = 10 * (3 + MMC * 2);
+    } else if (hpSupporting !== "NO") {
+      let count: number;
+      if (hpSupporting === "UNSURE") {
+        count = Math.min(60, Math.max(5, scopeValue * MMC * 6));
+      } else {
+        count = hpPartsTier === "FEW" ? 3 : hpPartsTier === "MOD" ? 10 : hpPartsTier === "MANY" ? 23 : 45;
+      }
+      const dist = { shape: 0.20, simple: 0.30, baseline: 0.35, complex: 0.10, experimental: 0.05 };
+      const vals = { shape: 5, simple: 10, baseline: 15, complex: 25, experimental: 40 };
+      const unique = count * (dist.shape * vals.shape + dist.simple * vals.simple + dist.baseline * vals.baseline + dist.complex * vals.complex + dist.experimental * vals.experimental);
+      const reused = (count * 0.5) * 5;
+      supporting = unique + reused;
+    }
+    const workBase = mainHp + supporting;
+    // Min hour adjustment (assume $75/hr)
+    const hours = workBase / 75;
+    const adj = hours <= 2 ? 0.25 : hours <= 4 ? 0.20 : hours <= 6 ? 0.15 : hours <= 8 ? 0.10 : hours <= 10 ? 0.05 : hours <= 12 ? 0.025 : 0;
+    const finalValue = workBase * (1 + adj);
+    return { finalValue, hours: hours * (1 + adj), MMC, scopeValue, polyScore, finalTri };
+  }, [hpEnabled, hpAssetType, hpLength, hpWidth, hpForm, hpDetail, hpPrecision, hpTriCount, hpTriUnsure, hpSupporting, hpPartsTier]);
+
 
   const handleSubmitSpecifications = async () => {
     if (!user) {
@@ -673,9 +737,110 @@ const AssetFinalReview = () => {
                 </div>
               </div>
             </div>
+
+            {/* 10 High Poly Intake */}
+            <div>
+              <SectionHeader num="10" title="HIGH POLY INTAKE" />
+              <div className="border border-border rounded-lg bg-card/40 p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">ENABLE HIGH POLY STAGE</p>
+                    <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mt-1">TOGGLE TO INCLUDE HP COSTS IN ESTIMATE</p>
+                  </div>
+                  <Switch checked={hpEnabled} onCheckedChange={setHpEnabled} />
+                </div>
+
+                {hpEnabled && (
+                  <div className="space-y-6 pt-2 border-t border-border">
+                    {/* Asset Type */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">ASSET TYPE</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {([["SHS","STANDARD HARD SURFACE"],["THS","TECHNICAL HARD SURFACE"],["ORG","ORGANIC"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={() => setHpAssetType(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpAssetType===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Estimated Size */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">ESTIMATED SIZE</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[["LENGTH (M)",hpLength,setHpLength,false],["WIDTH (M)",hpWidth,setHpWidth,false],["HEIGHT (M, OPT)",hpHeight,setHpHeight,true]].map(([lab,val,fn]:any) => (
+                          <div key={lab}>
+                            <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mb-1">{lab}</p>
+                            <input type="number" min="0" step="0.1" value={val} onChange={e=>fn(e.target.value)} className="w-full bg-background border border-border rounded px-3 py-2 text-sm font-sans text-foreground focus:outline-none focus:border-copper/50" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Shape Complexity */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">SHAPE COMPLEXITY</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["VERY SIMPLE",0.2],["SIMPLE",0.4],["MODERATE",0.6],["COMPLEX",0.8],["HIGHLY COMPLEX",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpForm(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpForm===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Detail Density */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">DETAIL DENSITY</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["MINIMAL",0.2],["LOW",0.4],["MODERATE",0.6],["HIGH",0.8],["VERY HIGH",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpDetail(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpDetail===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Precision Requirement */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">PRECISION REQUIREMENT</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["LOOSE / CONCEPT",0.25],["STANDARD",0.5],["HIGH PRECISION",0.75],["EXTREME / CRITICAL",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpPrecision(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpPrecision===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Target Triangle Count */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">TARGET TRIANGLE COUNT</p>
+                      <div className="flex gap-3 items-end">
+                        <div className="flex-1">
+                          <input type="number" min="0" disabled={hpTriUnsure} value={hpTriCount} onChange={e=>setHpTriCount(e.target.value)} placeholder="e.g. 50000" className="w-full bg-background border border-border rounded px-3 py-2 text-sm font-sans text-foreground focus:outline-none focus:border-copper/50 disabled:opacity-40" />
+                        </div>
+                        <button onClick={()=>setHpTriUnsure(!hpTriUnsure)} className={`px-4 py-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpTriUnsure?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>I'M NOT SURE</button>
+                      </div>
+                    </div>
+
+                    {/* Supporting Parts */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">SUPPORTING PARTS</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(["YES","NO","UNSURE"] as const).map(k => (
+                          <button key={k} onClick={()=>setHpSupporting(k)} className={`py-3 rounded text-[10px] tracking-[0.1em] uppercase font-sans font-bold border transition-colors ${hpSupporting===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{k}</button>
+                        ))}
+                      </div>
+                      {hpSupporting === "YES" && (
+                        <div className="mt-4">
+                          <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mb-2">UNIQUE PART COUNT</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["FEW","FEW (1–5)"],["MOD","MODERATE (6–15)"],["MANY","MANY (16–30)"],["VMANY","VERY MANY (30+)"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>setHpPartsTier(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpPartsTier===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT: Command Summary Sidebar */}
           <div className="space-y-6">
             <div className="border border-border rounded-lg bg-card/60 p-6 sticky top-[120px]">
               <div className="flex items-center justify-between mb-6">
@@ -773,6 +938,28 @@ const AssetFinalReview = () => {
                   <span className="text-lg font-serif font-bold text-copper">$1,200 – $1,800</span>
                 </div>
               </div>
+
+              {/* High Poly Estimate */}
+              {hpEstimate && (
+                <div className="mb-6 border border-copper/30 rounded-lg bg-copper/5 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper">HIGH POLY STAGE</span>
+                    <span className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground">CALCULATED</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">EST. HOURS</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{hpEstimate.hours.toFixed(1)} HRS</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">TARGET TRI COUNT</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{hpEstimate.finalTri.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-copper/20">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">HP VALUE</span>
+                    <span className="text-lg font-serif font-bold text-copper">${hpEstimate.finalValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                  </div>
+                </div>
+              )}
 
               {/* CTA */}
               <button onClick={handleSubmitSpecifications} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
