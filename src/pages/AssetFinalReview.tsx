@@ -874,6 +874,96 @@ const AssetFinalReview = () => {
                 )}
               </div>
             </div>
+
+            {/* 11 Retopo / UV / Bake Intake */}
+            <div>
+              <SectionHeader num="11" title="RETOPO / UV / BAKE INTAKE" />
+              <div className="border border-border rounded-lg bg-card/40 p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">ENABLE RETOPO / UV / BAKE STAGE</p>
+                    <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mt-1">REQUIRES HIGH POLY STAGE TO BE ENABLED FOR ANCHOR BASE</p>
+                  </div>
+                  <Switch checked={rubEnabled} onCheckedChange={setRubEnabled} />
+                </div>
+
+                {rubEnabled && !hpEstimate && (
+                  <div className="border border-copper/40 bg-copper/10 rounded p-3">
+                    <p className="text-[10px] tracking-[0.05em] uppercase font-sans text-copper">ENABLE HIGH POLY INTAKE FIRST — RUB IS ANCHORED TO HP BASE VALUE.</p>
+                  </div>
+                )}
+
+                {rubEnabled && (
+                  <div className="space-y-6 pt-2 border-t border-border">
+                    {/* Target Low Poly Tri Count */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">TARGET LOW POLY TRIANGLE COUNT</p>
+                      <input type="number" min="0" value={rubLowTri} onChange={e=>setRubLowTri(e.target.value)} placeholder="e.g. 8000 — leave blank to match game-ready standard" className="w-full bg-background border border-border rounded px-3 py-2 text-sm font-sans text-foreground focus:outline-none focus:border-copper/50" />
+                    </div>
+
+                    {/* Topology Standard */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">TOPOLOGY STANDARD</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {([["GAME","GAME-READY (75%+ QUADS)"],["CLEAN","CLEAN PRODUCTION (95%+ QUADS)"],["ALLQUADS","ALL-QUADS / ANIMATION-READY"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubTopology(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubTopology===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Deformation Requirement */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">DEFORMATION REQUIREMENT</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["STATIC","STATIC / NO MOVEMENT"],["MECH","MECHANICAL / MOVING PARTS"],["ORGANIC","ORGANIC DEFORMATION"],["CHAR","CHARACTER / CREATURE"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubDeformation(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubDeformation===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bake Quality */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">BAKE QUALITY</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["STD","STANDARD"],["HIGH","HIGH QUALITY"],["VHIGH","VERY HIGH / ARTIFACT-FREE"],["HERO","HERO QUALITY"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubBakeQuality(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubBakeQuality===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* UV Asset Type */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">UV ASSET TYPE</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["SIMPLE","SIMPLE HARD-SURFACE"],["STANDARD","STANDARD HARD-SURFACE"],["TECH","TECHNICAL HARD-SURFACE"],["ORGANIC","ORGANIC"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubUvAssetType(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubUvAssetType===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* UV Requirement */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">UV REQUIREMENT</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["BASIC","BASIC UNWRAP"],["CLEAN","CLEAN PACKING"],["TEXEL","CONSISTENT TEXEL DENSITY"],["UDIM","UDIM / MULTI-TILE"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubUvReq(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubUvReq===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Seam Requirement */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">SEAM REQUIREMENT</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["STD","SEAMS ARE FINE"],["REDUCED","MINIMIZE VISIBLE SEAMS"],["KEY","SEAMLESS IN KEY AREAS"],["TILING","FULLY SEAMLESS / TILING-CRITICAL"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setRubSeam(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${rubSeam===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-6">
