@@ -737,9 +737,110 @@ const AssetFinalReview = () => {
                 </div>
               </div>
             </div>
+
+            {/* 10 High Poly Intake */}
+            <div>
+              <SectionHeader num="10" title="HIGH POLY INTAKE" />
+              <div className="border border-border rounded-lg bg-card/40 p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">ENABLE HIGH POLY STAGE</p>
+                    <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mt-1">TOGGLE TO INCLUDE HP COSTS IN ESTIMATE</p>
+                  </div>
+                  <Switch checked={hpEnabled} onCheckedChange={setHpEnabled} />
+                </div>
+
+                {hpEnabled && (
+                  <div className="space-y-6 pt-2 border-t border-border">
+                    {/* Asset Type */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">ASSET TYPE</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {([["SHS","STANDARD HARD SURFACE"],["THS","TECHNICAL HARD SURFACE"],["ORG","ORGANIC"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={() => setHpAssetType(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpAssetType===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Estimated Size */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">ESTIMATED SIZE</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[["LENGTH (M)",hpLength,setHpLength,false],["WIDTH (M)",hpWidth,setHpWidth,false],["HEIGHT (M, OPT)",hpHeight,setHpHeight,true]].map(([lab,val,fn]:any) => (
+                          <div key={lab}>
+                            <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mb-1">{lab}</p>
+                            <input type="number" min="0" step="0.1" value={val} onChange={e=>fn(e.target.value)} className="w-full bg-background border border-border rounded px-3 py-2 text-sm font-sans text-foreground focus:outline-none focus:border-copper/50" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Shape Complexity */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">SHAPE COMPLEXITY</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["VERY SIMPLE",0.2],["SIMPLE",0.4],["MODERATE",0.6],["COMPLEX",0.8],["HIGHLY COMPLEX",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpForm(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpForm===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Detail Density */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">DETAIL DENSITY</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["MINIMAL",0.2],["LOW",0.4],["MODERATE",0.6],["HIGH",0.8],["VERY HIGH",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpDetail(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpDetail===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Precision Requirement */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">PRECISION REQUIREMENT</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {([["LOOSE / CONCEPT",0.25],["STANDARD",0.5],["HIGH PRECISION",0.75],["EXTREME / CRITICAL",1.0]] as const).map(([l,v]) => (
+                          <button key={l} onClick={()=>setHpPrecision(v)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpPrecision===v?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Target Triangle Count */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">TARGET TRIANGLE COUNT</p>
+                      <div className="flex gap-3 items-end">
+                        <div className="flex-1">
+                          <input type="number" min="0" disabled={hpTriUnsure} value={hpTriCount} onChange={e=>setHpTriCount(e.target.value)} placeholder="e.g. 50000" className="w-full bg-background border border-border rounded px-3 py-2 text-sm font-sans text-foreground focus:outline-none focus:border-copper/50 disabled:opacity-40" />
+                        </div>
+                        <button onClick={()=>setHpTriUnsure(!hpTriUnsure)} className={`px-4 py-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpTriUnsure?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>I'M NOT SURE</button>
+                      </div>
+                    </div>
+
+                    {/* Supporting Parts */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">SUPPORTING PARTS</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(["YES","NO","UNSURE"] as const).map(k => (
+                          <button key={k} onClick={()=>setHpSupporting(k)} className={`py-3 rounded text-[10px] tracking-[0.1em] uppercase font-sans font-bold border transition-colors ${hpSupporting===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{k}</button>
+                        ))}
+                      </div>
+                      {hpSupporting === "YES" && (
+                        <div className="mt-4">
+                          <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mb-2">UNIQUE PART COUNT</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["FEW","FEW (1–5)"],["MOD","MODERATE (6–15)"],["MANY","MANY (16–30)"],["VMANY","VERY MANY (30+)"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>setHpPartsTier(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${hpPartsTier===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT: Command Summary Sidebar */}
           <div className="space-y-6">
             <div className="border border-border rounded-lg bg-card/60 p-6 sticky top-[120px]">
               <div className="flex items-center justify-between mb-6">
