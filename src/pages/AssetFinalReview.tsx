@@ -185,6 +185,71 @@ const AssetFinalReview = () => {
     return { finalValue, hours, retopoFactor, uvFactor, bakeFactor, lowTri };
   }, [rubEnabled, hpEstimate, rubLowTri, rubTopology, rubDeformation, rubBakeQuality, rubUvAssetType, rubUvReq, rubSeam]);
 
+  // ====== Section 12: Texture Intake ======
+  type TexType = "HS_CLEAN" | "HS_WORN" | "ORGANIC" | "FABRIC" | "SKIN" | "STYLIZED" | "OTHER";
+  type TexCoverage = "SMALL" | "MED" | "LARGE" | "FULL";
+  type TexMaps = "BASE" | "BASE_RM" | "PBR" | "PBR_PLUS";
+  type TexManual = "NONE" | "LOW" | "MOD" | "HIGH" | "VHIGH";
+  type TexDetail = "BAKE" | "MBAKE" | "MIX" | "MAUTH" | "FAUTH";
+  type TexVariation = "UNIFORM" | "LIGHT" | "MOD" | "HIGH" | "UNIQUE";
+  interface TexSet {
+    id: string; label: string;
+    type: TexType; coverage: TexCoverage; maps: TexMaps;
+    manual: TexManual; detail: TexDetail; variation: TexVariation;
+  }
+  const newTexSet = (n: number): TexSet => ({
+    id: crypto.randomUUID(), label: `TEXTURE SET ${n}`,
+    type: "HS_CLEAN", coverage: "MED", maps: "PBR",
+    manual: "LOW", detail: "MBAKE", variation: "LIGHT",
+  });
+  const [textureEnabled, setTextureEnabled] = useState(false);
+  const [textureSetTier, setTextureSetTier] = useState<"1" | "2-3" | "4-6" | "7+" | "UNSURE">("1");
+  const [texSets, setTexSets] = useState<TexSet[]>([newTexSet(1)]);
+
+  const setTexSetCount = (tier: typeof textureSetTier) => {
+    setTextureSetTier(tier);
+    const target = tier === "1" ? 1 : tier === "2-3" ? 2 : tier === "4-6" ? 4 : tier === "7+" ? 7 : 1;
+    setTexSets(prev => {
+      if (prev.length === target) return prev;
+      if (prev.length < target) {
+        const add = Array.from({ length: target - prev.length }, (_, i) => newTexSet(prev.length + i + 1));
+        return [...prev, ...add];
+      }
+      return prev.slice(0, target);
+    });
+  };
+  const updateTexSet = (id: string, patch: Partial<TexSet>) =>
+    setTexSets(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
+  const addTexSet = () => setTexSets(prev => [...prev, newTexSet(prev.length + 1)]);
+  const removeTexSet = (id: string) => setTexSets(prev => prev.length > 1 ? prev.filter(s => s.id !== id) : prev);
+
+  const textureEstimate = useMemo(() => {
+    if (!textureEnabled || !hpEstimate) return null;
+    const hpBase = hpEstimate.finalValue;
+    const TYPE_W: Record<TexType, number> = { HS_CLEAN: 0.10, HS_WORN: 0.16, ORGANIC: 0.18, FABRIC: 0.16, SKIN: 0.22, STYLIZED: 0.12, OTHER: 0.14 };
+    const COV_W: Record<TexCoverage, number> = { SMALL: 0.18, MED: 0.38, LARGE: 0.62, FULL: 0.88 };
+    const MAPS_W: Record<TexMaps, number> = { BASE: 0.05, BASE_RM: 0.10, PBR: 0.18, PBR_PLUS: 0.26 };
+    const MAN_W: Record<TexManual, number> = { NONE: 0, LOW: 0.05, MOD: 0.10, HIGH: 0.18, VHIGH: 0.28 };
+    const DET_W: Record<TexDetail, number> = { BAKE: 0, MBAKE: 0.03, MIX: 0.06, MAUTH: 0.12, FAUTH: 0.20 };
+    const VAR_W: Record<TexVariation, number> = { UNIFORM: 0, LIGHT: 0.04, MOD: 0.08, HIGH: 0.14, UNIQUE: 0.22 };
+
+    const perSet = texSets.map(s => {
+      const normal = TYPE_W[s.type] + DET_W[s.detail];
+      const baseColor = MAPS_W[s.maps] + VAR_W[s.variation];
+      const minor = MAN_W[s.manual];
+      const complexity = normal + baseColor + minor;
+      const coverage = COV_W[s.coverage];
+      const finalFactor = complexity * coverage;
+      return { id: s.id, label: s.label, complexity, coverage, finalFactor };
+    });
+    const textureWork = perSet.reduce((sum, p) => sum + p.finalFactor, 0);
+    const creationCost = hpBase * textureWork * 0.45;
+    const applicationCost = hpBase * textureWork * 0.55;
+    const finalValue = creationCost + applicationCost;
+    const hours = finalValue / 75;
+    return { finalValue, hours, textureWork, creationCost, applicationCost, perSet };
+  }, [textureEnabled, hpEstimate, texSets]);
+
 
   const handleSubmitSpecifications = async () => {
     if (!user) {
