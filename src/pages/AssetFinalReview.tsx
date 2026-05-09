@@ -251,6 +251,13 @@ const AssetFinalReview = () => {
   }, [textureEnabled, hpEstimate, texSets]);
 
 
+  // ====== Section 13: Global Project Intake (Modal) ======
+  const [globalModalOpen, setGlobalModalOpen] = useState(false);
+  const [gpClarity, setGpClarity] = useState<"VDETAIL" | "MOSTLY" | "PARTIAL" | "ROUGH">("MOSTLY");
+  const [gpReference, setGpReference] = useState<"VCLEAR" | "GOOD" | "MIXED" | "POOR" | "NONE">("GOOD");
+  const [gpWorkflow, setGpWorkflow] = useState<"VSMOOTH" | "STD" | "SOME" | "DIFF" | "HIGH">("STD");
+  const [gpRevisions, setGpRevisions] = useState<"0" | "1" | "2" | "3+">("1");
+
   const handleSubmitSpecifications = async () => {
     if (!user) {
       navigate("/auth");
