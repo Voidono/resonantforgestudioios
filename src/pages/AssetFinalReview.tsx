@@ -1029,6 +1029,123 @@ const AssetFinalReview = () => {
                 )}
               </div>
             </div>
+
+            {/* 12 Texture Intake */}
+            <div className="space-y-4">
+              <SectionHeader num="12" title="TEXTURE INTAKE" />
+              <div className="border border-border rounded-lg bg-card/40 p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">ENABLE TEXTURE STAGE</p>
+                    <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mt-1">REQUIRES HIGH POLY STAGE TO BE ENABLED FOR ANCHOR BASE</p>
+                  </div>
+                  <Switch checked={textureEnabled} onCheckedChange={setTextureEnabled} />
+                </div>
+
+                {textureEnabled && !hpEstimate && (
+                  <div className="border border-copper/40 bg-copper/10 rounded p-3">
+                    <p className="text-[10px] tracking-[0.05em] uppercase font-sans text-copper">ENABLE HIGH POLY INTAKE FIRST — TEXTURE IS ANCHORED TO HP BASE VALUE.</p>
+                  </div>
+                )}
+
+                {textureEnabled && (
+                  <div className="space-y-6 pt-2 border-t border-border">
+                    {/* Set Count Tier */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">NUMBER OF TEXTURE SETS</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["1","1"],["2-3","2 TO 3"],["4-6","4 TO 6"],["7+","7+"],["UNSURE","UNSURE"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setTexSetCount(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${textureSetTier===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Per-Set Cards */}
+                    {texSets.map((s) => (
+                      <div key={s.id} className="border border-copper/30 rounded-lg bg-background/40 p-5 space-y-5">
+                        <div className="flex items-center justify-between">
+                          <input
+                            value={s.label}
+                            onChange={e=>updateTexSet(s.id, { label: e.target.value })}
+                            className="bg-transparent border-b border-border focus:border-copper/60 text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground outline-none px-1 py-1 w-64"
+                          />
+                          {texSets.length > 1 && (
+                            <button onClick={()=>removeTexSet(s.id)} className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground hover:text-copper">REMOVE</button>
+                          )}
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">TEXTURE TYPE</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["HS_CLEAN","HARD SURFACE — CLEAN"],["HS_WORN","HARD SURFACE — WORN"],["ORGANIC","ORGANIC"],["FABRIC","FABRIC / CLOTH"],["SKIN","SKIN"],["STYLIZED","STYLIZED / PAINTED"],["OTHER","OTHER"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{type:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.type===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">COVERAGE</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["SMALL","SMALL — 10–25%"],["MED","MEDIUM — 25–50%"],["LARGE","LARGE — 50–75%"],["FULL","ENTIRE — 75–100%"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{coverage:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.coverage===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">REQUIRED MAPS</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["BASE","BASE COLOR ONLY"],["BASE_RM","BASE + ROUGH / METAL"],["PBR","FULL PBR"],["PBR_PLUS","FULL PBR + AUTHORED DETAIL"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{maps:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.maps===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">MANUAL WORK REQUIRED</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["NONE","NONE"],["LOW","LOW <25%"],["MOD","MODERATE 25–50%"],["HIGH","HIGH 50–75%"],["VHIGH","VERY HIGH 75–100%"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{manual:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.manual===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">DETAIL SOURCE</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["BAKE","FROM BAKE"],["MBAKE","MOSTLY BAKE"],["MIX","MIXED"],["MAUTH","MOSTLY AUTHORED"],["FAUTH","FULLY AUTHORED"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{detail:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.detail===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">VARIATION REQUIREMENT</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["UNIFORM","MOSTLY UNIFORM / TILING"],["LIGHT","LIGHT VARIATION"],["MOD","MODERATE VARIATION"],["HIGH","HIGH VARIATION"],["UNIQUE","FULLY UNIQUE"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{variation:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.variation===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">TEXTURE-SPECIFIC REFERENCES</p>
+                          <label className="flex items-center justify-center gap-2 py-4 border border-dashed border-border rounded cursor-pointer hover:border-copper/60 transition-colors">
+                            <Upload className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">UPLOAD REFERENCE IMAGES</span>
+                            <input type="file" multiple className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+
+                    <button onClick={addTexSet} className="w-full py-3 rounded border border-dashed border-copper/40 text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper hover:bg-copper/10 transition-colors">
+                      + ADD ANOTHER TEXTURE SET
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-6">
