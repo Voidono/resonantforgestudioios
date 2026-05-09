@@ -251,6 +251,13 @@ const AssetFinalReview = () => {
   }, [textureEnabled, hpEstimate, texSets]);
 
 
+  // ====== Section 13: Global Project Intake (Modal) ======
+  const [globalModalOpen, setGlobalModalOpen] = useState(false);
+  const [gpClarity, setGpClarity] = useState<"VDETAIL" | "MOSTLY" | "PARTIAL" | "ROUGH">("MOSTLY");
+  const [gpReference, setGpReference] = useState<"VCLEAR" | "GOOD" | "MIXED" | "POOR" | "NONE">("GOOD");
+  const [gpWorkflow, setGpWorkflow] = useState<"VSMOOTH" | "STD" | "SOME" | "DIFF" | "HIGH">("STD");
+  const [gpRevisions, setGpRevisions] = useState<"0" | "1" | "2" | "3+">("1");
+
   const handleSubmitSpecifications = async () => {
     if (!user) {
       navigate("/auth");
@@ -1321,7 +1328,7 @@ const AssetFinalReview = () => {
               )}
 
               {/* CTA */}
-              <button onClick={handleSubmitSpecifications} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
+              <button onClick={() => setGlobalModalOpen(true)} disabled={submitting} className="w-full py-4 rounded-lg text-sm tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50">
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {submitting ? "SUBMITTING..." : "CONTINUE TO FINAL REVIEW"}
                 {!submitting && <ArrowRight className="w-4 h-4" />}
@@ -1356,6 +1363,90 @@ const AssetFinalReview = () => {
           <span className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">© 2026 RESONANT FORGE STUDIOS. ALL RIGHTS RESERVED</span>
         </div>
       </div>
+
+      {/* Global Project Intake Modal */}
+      {globalModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={() => !submitting && setGlobalModalOpen(false)}>
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-copper/40 rounded-lg p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <p className="text-[9px] tracking-[0.2em] uppercase font-sans text-copper mb-2">SECTION 13 / GLOBAL PROJECT INTAKE</p>
+                <h2 className="text-2xl font-serif font-bold text-foreground">Final Project Conditions</h2>
+                <p className="text-[11px] tracking-[0.05em] font-sans text-muted-foreground mt-2">A few last questions to finalize your project scope.</p>
+              </div>
+              <button onClick={() => !submitting && setGlobalModalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors text-xl leading-none">×</button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Project Clarity */}
+              <div>
+                <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground mb-3">PROJECT CLARITY</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    ["VDETAIL", "Very detailed, everything defined"],
+                    ["MOSTLY", "Mostly defined"],
+                    ["PARTIAL", "Partially defined"],
+                    ["ROUGH", "Very rough / exploratory"],
+                  ] as const).map(([k, label]) => (
+                    <button key={k} onClick={() => setGpClarity(k)} className={`text-left px-3 py-2.5 rounded border text-[10px] tracking-[0.05em] uppercase font-sans transition-colors ${gpClarity === k ? "border-copper bg-copper/10 text-copper" : "border-border bg-background/40 text-muted-foreground hover:border-copper/40"}`}>{label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reference Quality */}
+              <div>
+                <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground mb-3">REFERENCE QUALITY</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    ["VCLEAR", "Very clear and usable"],
+                    ["GOOD", "Good"],
+                    ["MIXED", "Mixed"],
+                    ["POOR", "Poor / unclear"],
+                    ["NONE", "None"],
+                  ] as const).map(([k, label]) => (
+                    <button key={k} onClick={() => setGpReference(k)} className={`text-left px-3 py-2.5 rounded border text-[10px] tracking-[0.05em] uppercase font-sans transition-colors ${gpReference === k ? "border-copper bg-copper/10 text-copper" : "border-border bg-background/40 text-muted-foreground hover:border-copper/40"}`}>{label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Workflow Conditions */}
+              <div>
+                <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground mb-3">WORKFLOW CONDITIONS</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    ["VSMOOTH", "Very smooth"],
+                    ["STD", "Standard"],
+                    ["SOME", "Some complexity"],
+                    ["DIFF", "Difficult"],
+                    ["HIGH", "Highly complex"],
+                  ] as const).map(([k, label]) => (
+                    <button key={k} onClick={() => setGpWorkflow(k)} className={`text-left px-3 py-2.5 rounded border text-[10px] tracking-[0.05em] uppercase font-sans transition-colors ${gpWorkflow === k ? "border-copper bg-copper/10 text-copper" : "border-border bg-background/40 text-muted-foreground hover:border-copper/40"}`}>{label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Included Revisions */}
+              <div>
+                <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-foreground mb-3">INCLUDED REVISION COUNT</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {(["0", "1", "2", "3+"] as const).map((k) => (
+                    <button key={k} onClick={() => setGpRevisions(k)} className={`px-3 py-2.5 rounded border text-[11px] tracking-[0.1em] uppercase font-sans font-bold transition-colors ${gpRevisions === k ? "border-copper bg-copper/10 text-copper" : "border-border bg-background/40 text-muted-foreground hover:border-copper/40"}`}>{k}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border">
+              <button onClick={() => setGlobalModalOpen(false)} disabled={submitting} className="flex-1 py-3 rounded-lg text-[10px] tracking-[0.15em] uppercase font-sans font-bold border border-border text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50">CANCEL</button>
+              <button onClick={async () => { await handleSubmitSpecifications(); setGlobalModalOpen(false); }} disabled={submitting} className="flex-[2] py-3 rounded-lg text-[10px] tracking-[0.15em] uppercase font-sans font-bold bg-copper text-background hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {submitting ? "SUBMITTING..." : "CONFIRM & SUBMIT"}
+                {!submitting && <ArrowRight className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
