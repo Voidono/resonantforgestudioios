@@ -185,6 +185,71 @@ const AssetFinalReview = () => {
     return { finalValue, hours, retopoFactor, uvFactor, bakeFactor, lowTri };
   }, [rubEnabled, hpEstimate, rubLowTri, rubTopology, rubDeformation, rubBakeQuality, rubUvAssetType, rubUvReq, rubSeam]);
 
+  // ====== Section 12: Texture Intake ======
+  type TexType = "HS_CLEAN" | "HS_WORN" | "ORGANIC" | "FABRIC" | "SKIN" | "STYLIZED" | "OTHER";
+  type TexCoverage = "SMALL" | "MED" | "LARGE" | "FULL";
+  type TexMaps = "BASE" | "BASE_RM" | "PBR" | "PBR_PLUS";
+  type TexManual = "NONE" | "LOW" | "MOD" | "HIGH" | "VHIGH";
+  type TexDetail = "BAKE" | "MBAKE" | "MIX" | "MAUTH" | "FAUTH";
+  type TexVariation = "UNIFORM" | "LIGHT" | "MOD" | "HIGH" | "UNIQUE";
+  interface TexSet {
+    id: string; label: string;
+    type: TexType; coverage: TexCoverage; maps: TexMaps;
+    manual: TexManual; detail: TexDetail; variation: TexVariation;
+  }
+  const newTexSet = (n: number): TexSet => ({
+    id: crypto.randomUUID(), label: `TEXTURE SET ${n}`,
+    type: "HS_CLEAN", coverage: "MED", maps: "PBR",
+    manual: "LOW", detail: "MBAKE", variation: "LIGHT",
+  });
+  const [textureEnabled, setTextureEnabled] = useState(false);
+  const [textureSetTier, setTextureSetTier] = useState<"1" | "2-3" | "4-6" | "7+" | "UNSURE">("1");
+  const [texSets, setTexSets] = useState<TexSet[]>([newTexSet(1)]);
+
+  const setTexSetCount = (tier: typeof textureSetTier) => {
+    setTextureSetTier(tier);
+    const target = tier === "1" ? 1 : tier === "2-3" ? 2 : tier === "4-6" ? 4 : tier === "7+" ? 7 : 1;
+    setTexSets(prev => {
+      if (prev.length === target) return prev;
+      if (prev.length < target) {
+        const add = Array.from({ length: target - prev.length }, (_, i) => newTexSet(prev.length + i + 1));
+        return [...prev, ...add];
+      }
+      return prev.slice(0, target);
+    });
+  };
+  const updateTexSet = (id: string, patch: Partial<TexSet>) =>
+    setTexSets(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
+  const addTexSet = () => setTexSets(prev => [...prev, newTexSet(prev.length + 1)]);
+  const removeTexSet = (id: string) => setTexSets(prev => prev.length > 1 ? prev.filter(s => s.id !== id) : prev);
+
+  const textureEstimate = useMemo(() => {
+    if (!textureEnabled || !hpEstimate) return null;
+    const hpBase = hpEstimate.finalValue;
+    const TYPE_W: Record<TexType, number> = { HS_CLEAN: 0.10, HS_WORN: 0.16, ORGANIC: 0.18, FABRIC: 0.16, SKIN: 0.22, STYLIZED: 0.12, OTHER: 0.14 };
+    const COV_W: Record<TexCoverage, number> = { SMALL: 0.18, MED: 0.38, LARGE: 0.62, FULL: 0.88 };
+    const MAPS_W: Record<TexMaps, number> = { BASE: 0.05, BASE_RM: 0.10, PBR: 0.18, PBR_PLUS: 0.26 };
+    const MAN_W: Record<TexManual, number> = { NONE: 0, LOW: 0.05, MOD: 0.10, HIGH: 0.18, VHIGH: 0.28 };
+    const DET_W: Record<TexDetail, number> = { BAKE: 0, MBAKE: 0.03, MIX: 0.06, MAUTH: 0.12, FAUTH: 0.20 };
+    const VAR_W: Record<TexVariation, number> = { UNIFORM: 0, LIGHT: 0.04, MOD: 0.08, HIGH: 0.14, UNIQUE: 0.22 };
+
+    const perSet = texSets.map(s => {
+      const normal = TYPE_W[s.type] + DET_W[s.detail];
+      const baseColor = MAPS_W[s.maps] + VAR_W[s.variation];
+      const minor = MAN_W[s.manual];
+      const complexity = normal + baseColor + minor;
+      const coverage = COV_W[s.coverage];
+      const finalFactor = complexity * coverage;
+      return { id: s.id, label: s.label, complexity, coverage, finalFactor };
+    });
+    const textureWork = perSet.reduce((sum, p) => sum + p.finalFactor, 0);
+    const creationCost = hpBase * textureWork * 0.45;
+    const applicationCost = hpBase * textureWork * 0.55;
+    const finalValue = creationCost + applicationCost;
+    const hours = finalValue / 75;
+    return { finalValue, hours, textureWork, creationCost, applicationCost, perSet };
+  }, [textureEnabled, hpEstimate, texSets]);
+
 
   const handleSubmitSpecifications = async () => {
     if (!user) {
@@ -964,6 +1029,123 @@ const AssetFinalReview = () => {
                 )}
               </div>
             </div>
+
+            {/* 12 Texture Intake */}
+            <div className="space-y-4">
+              <SectionHeader num="12" title="TEXTURE INTAKE" />
+              <div className="border border-border rounded-lg bg-card/40 p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">ENABLE TEXTURE STAGE</p>
+                    <p className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground mt-1">REQUIRES HIGH POLY STAGE TO BE ENABLED FOR ANCHOR BASE</p>
+                  </div>
+                  <Switch checked={textureEnabled} onCheckedChange={setTextureEnabled} />
+                </div>
+
+                {textureEnabled && !hpEstimate && (
+                  <div className="border border-copper/40 bg-copper/10 rounded p-3">
+                    <p className="text-[10px] tracking-[0.05em] uppercase font-sans text-copper">ENABLE HIGH POLY INTAKE FIRST — TEXTURE IS ANCHORED TO HP BASE VALUE.</p>
+                  </div>
+                )}
+
+                {textureEnabled && (
+                  <div className="space-y-6 pt-2 border-t border-border">
+                    {/* Set Count Tier */}
+                    <div className="border border-border rounded p-4 bg-background/40">
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-3">NUMBER OF TEXTURE SETS</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {([["1","1"],["2-3","2 TO 3"],["4-6","4 TO 6"],["7+","7+"],["UNSURE","UNSURE"]] as const).map(([k,l]) => (
+                          <button key={k} onClick={()=>setTexSetCount(k)} className={`py-3 px-2 rounded text-[9px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${textureSetTier===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Per-Set Cards */}
+                    {texSets.map((s) => (
+                      <div key={s.id} className="border border-copper/30 rounded-lg bg-background/40 p-5 space-y-5">
+                        <div className="flex items-center justify-between">
+                          <input
+                            value={s.label}
+                            onChange={e=>updateTexSet(s.id, { label: e.target.value })}
+                            className="bg-transparent border-b border-border focus:border-copper/60 text-[11px] tracking-[0.1em] uppercase font-sans font-bold text-foreground outline-none px-1 py-1 w-64"
+                          />
+                          {texSets.length > 1 && (
+                            <button onClick={()=>removeTexSet(s.id)} className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground hover:text-copper">REMOVE</button>
+                          )}
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">TEXTURE TYPE</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["HS_CLEAN","HARD SURFACE — CLEAN"],["HS_WORN","HARD SURFACE — WORN"],["ORGANIC","ORGANIC"],["FABRIC","FABRIC / CLOTH"],["SKIN","SKIN"],["STYLIZED","STYLIZED / PAINTED"],["OTHER","OTHER"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{type:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.type===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">COVERAGE</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["SMALL","SMALL — 10–25%"],["MED","MEDIUM — 25–50%"],["LARGE","LARGE — 50–75%"],["FULL","ENTIRE — 75–100%"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{coverage:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.coverage===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">REQUIRED MAPS</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {([["BASE","BASE COLOR ONLY"],["BASE_RM","BASE + ROUGH / METAL"],["PBR","FULL PBR"],["PBR_PLUS","FULL PBR + AUTHORED DETAIL"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{maps:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.maps===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">MANUAL WORK REQUIRED</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["NONE","NONE"],["LOW","LOW <25%"],["MOD","MODERATE 25–50%"],["HIGH","HIGH 50–75%"],["VHIGH","VERY HIGH 75–100%"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{manual:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.manual===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">DETAIL SOURCE</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["BAKE","FROM BAKE"],["MBAKE","MOSTLY BAKE"],["MIX","MIXED"],["MAUTH","MOSTLY AUTHORED"],["FAUTH","FULLY AUTHORED"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{detail:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.detail===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">VARIATION REQUIREMENT</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([["UNIFORM","MOSTLY UNIFORM / TILING"],["LIGHT","LIGHT VARIATION"],["MOD","MODERATE VARIATION"],["HIGH","HIGH VARIATION"],["UNIQUE","FULLY UNIQUE"]] as const).map(([k,l]) => (
+                              <button key={k} onClick={()=>updateTexSet(s.id,{variation:k})} className={`py-2 px-2 rounded text-[8px] tracking-[0.05em] uppercase font-sans font-bold border transition-colors ${s.variation===k?"border-copper bg-copper/20 text-copper":"border-border text-muted-foreground hover:border-copper/40"}`}>{l}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[9px] tracking-[0.1em] uppercase font-sans font-bold text-copper mb-2">TEXTURE-SPECIFIC REFERENCES</p>
+                          <label className="flex items-center justify-center gap-2 py-4 border border-dashed border-border rounded cursor-pointer hover:border-copper/60 transition-colors">
+                            <Upload className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[9px] tracking-[0.1em] uppercase font-sans text-muted-foreground">UPLOAD REFERENCE IMAGES</span>
+                            <input type="file" multiple className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+
+                    <button onClick={addTexSet} className="w-full py-3 rounded border border-dashed border-copper/40 text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper hover:bg-copper/10 transition-colors">
+                      + ADD ANOTHER TEXTURE SET
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -1104,6 +1286,36 @@ const AssetFinalReview = () => {
                   <div className="flex items-center justify-between pt-2 border-t border-copper/20">
                     <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">RUB VALUE</span>
                     <span className="text-lg font-serif font-bold text-copper">${rubEstimate.finalValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Texture Estimate */}
+              {textureEstimate && (
+                <div className="mb-6 border border-copper/30 rounded-lg bg-copper/5 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-copper">TEXTURE STAGE</span>
+                    <span className="text-[9px] tracking-[0.05em] uppercase font-sans text-muted-foreground">CALCULATED</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">EST. HOURS</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{textureEstimate.hours.toFixed(1)} HRS</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">TEXTURE SETS</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">{textureEstimate.perSet.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">CREATION</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">${textureEstimate.creationCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] tracking-[0.05em] font-sans text-muted-foreground">APPLICATION</span>
+                    <span className="text-[10px] font-sans font-bold text-foreground">${textureEstimate.applicationCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-copper/20">
+                    <span className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold text-foreground">TEXTURE VALUE</span>
+                    <span className="text-lg font-serif font-bold text-copper">${textureEstimate.finalValue.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
               )}
