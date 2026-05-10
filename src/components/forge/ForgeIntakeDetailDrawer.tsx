@@ -274,22 +274,84 @@ const ForgeIntakeDetailDrawer = ({ requestId, onClose }: Props) => {
                               <div className="col-span-full"><Field label="DELIVERABLES" value={spec.deliverables} /></div>
                             </div>
 
-                            {pipe.hp && (
+                            {pipe.hp?.enabled && (
                               <>
                                 <SectionHead num="11" title="HIGH POLY INTAKE" />
-                                <Field label="HP DATA" value={pipe.hp} />
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                  <Field label="ASSET TYPE" value={pipe.hp.assetType} />
+                                  <Field label="LENGTH (M)" value={pipe.hp.length} />
+                                  <Field label="WIDTH (M)" value={pipe.hp.width} />
+                                  <Field label="HEIGHT (M)" value={pipe.hp.height} />
+                                  <Field label="SHAPE COMPLEXITY" value={pipe.hp.shapeComplexity} />
+                                  <Field label="DETAIL DENSITY" value={pipe.hp.detailDensity} />
+                                  <Field label="PRECISION" value={pipe.hp.precision} />
+                                  <Field label="TARGET TRI COUNT" value={pipe.hp.triUnsure ? "UNSURE" : pipe.hp.targetTriCount} />
+                                  <Field label="SUPPORTING PARTS" value={pipe.hp.supporting} />
+                                  <Field label="PARTS TIER" value={pipe.hp.partsTier} />
+                                </div>
+                                {pipe.hp.estimate && (
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                    <Field label="HP $ VALUE" value={`$${Number(pipe.hp.estimate.finalValue).toFixed(2)}`} />
+                                    <Field label="HP HOURS" value={Number(pipe.hp.estimate.hours).toFixed(2)} />
+                                    <Field label="MMC" value={Number(pipe.hp.estimate.MMC).toFixed(2)} />
+                                    <Field label="FINAL TRIS" value={pipe.hp.estimate.finalTri} />
+                                  </div>
+                                )}
                               </>
                             )}
-                            {pipe.rub && (
+                            {pipe.rub?.enabled && (
                               <>
                                 <SectionHead num="12" title="RETOPO / UV / BAKE" />
-                                <Field label="RUB DATA" value={pipe.rub} />
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                  <Field label="LOW TRI TARGET" value={pipe.rub.lowTri} />
+                                  <Field label="TOPOLOGY" value={pipe.rub.topology} />
+                                  <Field label="DEFORMATION" value={pipe.rub.deformation} />
+                                  <Field label="BAKE QUALITY" value={pipe.rub.bakeQuality} />
+                                  <Field label="UV ASSET TYPE" value={pipe.rub.uvAssetType} />
+                                  <Field label="UV REQUIREMENT" value={pipe.rub.uvRequirement} />
+                                  <Field label="SEAM REQUIREMENT" value={pipe.rub.seamRequirement} />
+                                </div>
+                                {pipe.rub.estimate && (
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                    <Field label="RUB $ VALUE" value={`$${Number(pipe.rub.estimate.finalValue).toFixed(2)}`} />
+                                    <Field label="RUB HOURS" value={Number(pipe.rub.estimate.hours).toFixed(2)} />
+                                    <Field label="RETOPO FACTOR" value={Number(pipe.rub.estimate.retopoFactor).toFixed(3)} />
+                                    <Field label="UV FACTOR" value={Number(pipe.rub.estimate.uvFactor).toFixed(3)} />
+                                    <Field label="BAKE FACTOR" value={Number(pipe.rub.estimate.bakeFactor).toFixed(3)} />
+                                  </div>
+                                )}
                               </>
                             )}
-                            {pipe.texture && (
+                            {pipe.texture?.enabled && (
                               <>
                                 <SectionHead num="13" title="TEXTURE SETS" />
-                                <Field label="TEXTURE DATA" value={pipe.texture} />
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                  <Field label="SET TIER" value={pipe.texture.setTier} />
+                                  <Field label="SET COUNT" value={pipe.texture.sets?.length} />
+                                </div>
+                                <div className="space-y-2 mt-3">
+                                  {(pipe.texture.sets || []).map((s: any) => (
+                                    <div key={s.id} className="border border-border/60 rounded bg-background/40 p-3">
+                                      <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-copper mb-2">{s.label}</p>
+                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                        <Field label="TYPE" value={s.type} />
+                                        <Field label="COVERAGE" value={s.coverage} />
+                                        <Field label="MAPS" value={s.maps} />
+                                        <Field label="MANUAL" value={s.manual} />
+                                        <Field label="DETAIL SOURCE" value={s.detail} />
+                                        <Field label="VARIATION" value={s.variation} />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                {pipe.texture.estimate && (
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                    <Field label="TEX $ VALUE" value={`$${Number(pipe.texture.estimate.finalValue).toFixed(2)}`} />
+                                    <Field label="TEX HOURS" value={Number(pipe.texture.estimate.hours).toFixed(2)} />
+                                    <Field label="CREATION COST" value={`$${Number(pipe.texture.estimate.creationCost).toFixed(2)}`} />
+                                    <Field label="APPLICATION COST" value={`$${Number(pipe.texture.estimate.applicationCost).toFixed(2)}`} />
+                                  </div>
+                                )}
                               </>
                             )}
                           </>
