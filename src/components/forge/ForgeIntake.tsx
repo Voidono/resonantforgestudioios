@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, AlertTriangle, Copy, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ForgeIntakeDetailDrawer from "./ForgeIntakeDetailDrawer";
 
 const workflowSteps = [
   { num: "01", title: "REVIEW SUBMISSION", description: "Management reviews the intake for missing info or incorrect scope." },
