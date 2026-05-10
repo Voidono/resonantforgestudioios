@@ -171,7 +171,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
                     <p className="text-[10px] font-sans font-bold text-copper">{intake.itemCount} ITEM{intake.itemCount !== 1 ? "S" : ""}</p>
                   </div>
                 </div>
-                <button className="w-full py-2.5 rounded text-[10px] tracking-[0.12em] uppercase font-sans font-bold border border-border bg-card/60 text-foreground hover:border-copper/40 transition-colors">
+                <button onClick={() => setOpenId(intake.id)} className="w-full py-2.5 rounded text-[10px] tracking-[0.12em] uppercase font-sans font-bold border border-border bg-card/60 text-foreground hover:border-copper/40 transition-colors">
                   OPEN INTAKE
                 </button>
               </div>
