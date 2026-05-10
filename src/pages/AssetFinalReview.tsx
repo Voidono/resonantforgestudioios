@@ -273,6 +273,45 @@ const AssetFinalReview = () => {
         .single();
       if (reqError) throw reqError;
 
+      // Build extended pipeline config with all calculator + intake data
+      const extPipelineConfig = {
+        ...pipelineConfig,
+        hp: hpEnabled ? {
+          enabled: true,
+          assetType: hpAssetType,
+          length: hpLength, width: hpWidth, height: hpHeight,
+          shapeComplexity: hpForm, detailDensity: hpDetail, precision: hpPrecision,
+          targetTriCount: hpTriUnsure ? null : hpTriCount,
+          triUnsure: hpTriUnsure,
+          supporting: hpSupporting,
+          partsTier: hpSupporting === "YES" ? hpPartsTier : null,
+          estimate: hpEstimate,
+        } : { enabled: false },
+        rub: rubEnabled ? {
+          enabled: true,
+          lowTri: rubLowTri,
+          topology: rubTopology,
+          deformation: rubDeformation,
+          bakeQuality: rubBakeQuality,
+          uvAssetType: rubUvAssetType,
+          uvRequirement: rubUvReq,
+          seamRequirement: rubSeam,
+          estimate: rubEstimate,
+        } : { enabled: false },
+        texture: textureEnabled ? {
+          enabled: true,
+          setTier: textureSetTier,
+          sets: texSets,
+          estimate: textureEstimate,
+        } : { enabled: false },
+        global: {
+          clarity: gpClarity,
+          reference: gpReference,
+          workflow: gpWorkflow,
+          revisions: gpRevisions,
+        },
+      };
+
       // Insert specification for each asset
       const specs = assets.map((a) => ({
         request_id: request.id,
@@ -313,7 +352,7 @@ const AssetFinalReview = () => {
         geometry_reuse: geometryReuse,
         target_engine: targetEngine,
         file_format: fileFormat,
-        pipeline_config: pipelineConfig,
+        pipeline_config: extPipelineConfig as any,
         delivery_texture_set_count: deliveryTextureSetCount,
         delivery_material_workflow: deliveryMaterialWorkflow,
         priority,
