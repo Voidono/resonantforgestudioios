@@ -197,6 +197,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
           ))}
         </div>
       </div>
+      <ForgeIntakeDetailDrawer requestId={openId} onClose={() => setOpenId(null)} />
     </div>
   );
 };
