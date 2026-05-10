@@ -32,6 +32,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
   const navigate = useNavigate();
   const [intakes, setIntakes] = useState<IntakeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchIntakes = async () => {
