@@ -352,7 +352,7 @@ const AssetFinalReview = () => {
         geometry_reuse: geometryReuse,
         target_engine: targetEngine,
         file_format: fileFormat,
-        pipeline_config: pipelineConfig,
+        pipeline_config: extPipelineConfig,
         delivery_texture_set_count: deliveryTextureSetCount,
         delivery_material_workflow: deliveryMaterialWorkflow,
         priority,
