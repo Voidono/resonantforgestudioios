@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, AlertTriangle, Copy, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ForgeIntakeDetailDrawer from "./ForgeIntakeDetailDrawer";
 
 const workflowSteps = [
   { num: "01", title: "REVIEW SUBMISSION", description: "Management reviews the intake for missing info or incorrect scope." },
@@ -31,6 +32,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
   const navigate = useNavigate();
   const [intakes, setIntakes] = useState<IntakeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchIntakes = async () => {
@@ -169,7 +171,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
                     <p className="text-[10px] font-sans font-bold text-copper">{intake.itemCount} ITEM{intake.itemCount !== 1 ? "S" : ""}</p>
                   </div>
                 </div>
-                <button className="w-full py-2.5 rounded text-[10px] tracking-[0.12em] uppercase font-sans font-bold border border-border bg-card/60 text-foreground hover:border-copper/40 transition-colors">
+                <button onClick={() => setOpenId(intake.id)} className="w-full py-2.5 rounded text-[10px] tracking-[0.12em] uppercase font-sans font-bold border border-border bg-card/60 text-foreground hover:border-copper/40 transition-colors">
                   OPEN INTAKE
                 </button>
               </div>
@@ -195,6 +197,7 @@ const ForgeIntake = ({ stats }: ForgeIntakeProps) => {
           ))}
         </div>
       </div>
+      <ForgeIntakeDetailDrawer requestId={openId} onClose={() => setOpenId(null)} />
     </div>
   );
 };
