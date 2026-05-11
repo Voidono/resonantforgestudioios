@@ -1,70 +1,53 @@
-## Goal
+## Problem
 
-On `/admin-operations/forge` (Intake tab), let admins open each intake card and see **every asset box** the client submitted plus **all the data** they filled in (geometry, materials, variants, rigging, HP, RUB, texture sets, global project intake, etc.).
+The Forge intake drawer renders "NO SPECIFICATION RECORDED" for every asset box, even though the user filled out `/asset-final-review`.
 
-## Current state
+Root cause (verified in the code):
 
-`src/components/forge/ForgeIntake.tsx` renders a card per `asset_requests` row with only: client, project name, workflow step, item count, submitted date, and a non-functional "OPEN INTAKE" button. The richer per-asset data lives in `asset_request_items` and `asset_specifications`, but is never queried or displayed.
+1. `AssetIntake.tsx` inserts an `asset_request` + `asset_request_items`, then navigates to `/asset-final-review` **without passing the new `request.id`**.
+2. `AssetFinalReview.tsx` then inserts a **brand-new, empty** `asset_request` (line 270) and writes its `asset_specifications` against that orphan request — never against the intake the admin sees in Forge.
+3. Even within one request, specs are inserted without `asset_item_id`, and the drawer matches them by array index (`specs[idx]`), so per-asset matching is fragile.
+
+The drawer already renders every field from `pipeline_config` (HP / RUB / Texture / Global) and every column on `asset_specifications`. The data just never reaches the right `request_id`.
 
 ## Plan
 
-### 1. Wire the "OPEN INTAKE" button to a detail drawer
+### 1. Carry the intake `request_id` (and asset list) into Final Review
 
-- Add a slide-in side drawer (or full-screen modal) component inside `ForgeIntake.tsx` triggered by clicking a card.
-- Drawer header: client name, project name, workflow step badge, submitted date, total budget / hours / final value from `asset_requests`.
+`src/pages/AssetIntake.tsx`
+- After the successful `asset_requests` + `asset_request_items` insert, navigate with state:
+  ```ts
+  navigate("/asset-final-review", {
+    state: {
+      requestId: request.id,
+      assets: assets.map(a => ({ id: a.id, size: a.size, intakeItemId: <inserted item id> })),
+    },
+  });
+  ```
+- To get each inserted item id, change the `asset_request_items` insert to `.select()` and map `asset_number` → `id`.
 
-### 2. Fetch full intake payload on open
+### 2. Make Final Review write into that existing request
 
-When a card is opened, query in parallel:
-- `asset_request_items` where `request_id = X` (every asset box the client added — `asset_number`, `size`, `category`, `studio_code`, all toggles, iterations, `project_description`, `requested_artist`, etc.)
-- `asset_specifications` where `request_id = X` (full per-asset spec: visual, production context, geometry, material, variants, rigging, delivery, plus the new HP / RUB / texture / global intake JSON stored in `pipeline_config` and `deliverables`).
+`src/pages/AssetFinalReview.tsx`
+- Read `useLocation().state` for `requestId` and `assets`. Fall back to a redirect to `/asset-intake` if missing.
+- Replace the local hardcoded `assets` mock (lines 15-21) with the assets passed from intake (preserving `id`, `size`, and `intakeItemId`).
+- **Remove** the `supabase.from("asset_requests").insert(...)` block (lines 268-274). Use `requestId` from state instead.
+- When building `specs`, set both `request_id: requestId` and `asset_item_id: a.intakeItemId` on each row so each spec is paired to its intake box.
 
-### 3. Render every asset box
+### 3. Match specs by `asset_item_id` in the drawer
 
-Inside the drawer, list one collapsible panel per `asset_request_item`, ordered by `asset_number`. Each panel shows:
+`src/components/forge/ForgeIntakeDetailDrawer.tsx`
+- Build a `specsByItem = new Map(specs.map(s => [s.asset_item_id, s]))`.
+- Inside the items loop, replace `const spec = specs[idx]` with `const spec = specsByItem.get(item.id) ?? specs[idx] ?? null` (index fallback covers any legacy rows written before this fix).
+- Keep the existing 13 sections + Global Project Intake block — they already cover every field saved by Final Review.
 
-- **Header strip**: asset number, size chip (S/M/L), category, studio code, requested artist.
-- **Toggles row**: full production / vfx / animation / rigging / reference search (rendered as on/off chips).
-- **Project description** + descriptor.
-- **Iterations** array.
-- **Stage toggles** JSON (rendered as a key→value grid).
-- **Linked specification** (matched by `asset_item_id`) broken into the existing 13 sections used in `AssetFinalReview.tsx`:
-  1. Visual & Style
-  2. Production Context
-  3. Geometry & Build
-  4. Material & Texture
-  5. Variants & States
-  6. Rigging & Animation
-  7. Production Efficiency
-  8. Engine & Pipeline
-  9. Delivery
-  10. High Poly Intake (from `pipeline_config.hp`)
-  11. Retopo / UV / Bake (from `pipeline_config.rub`)
-  12. Texture Sets (from `pipeline_config.texture`)
-  13. Global Project Intake (from `pipeline_config.global`) — shown once at the top of the drawer, not per asset.
+### 4. Empty-state copy
 
-Empty / unset fields are dimmed with an "—" placeholder so admins can see what's missing.
-
-### 4. UI styling
-
-- Match the existing copper/dark Forge aesthetic (`border-border`, `bg-card/40`, copper accents, `font-serif` headings, `font-sans` micro-labels with `tracking-[0.12em] uppercase`).
-- Each section uses a small copper bar + label header identical to the rest of the Forge dashboard for visual consistency.
-- Drawer scrolls internally; sticky header with close button.
-
-### 5. Loading / empty states
-
-- Spinner inside drawer while fetching.
-- "NO ASSET BOXES SUBMITTED" fallback if the request has zero items.
-- "NO SPECIFICATION RECORDED" fallback per asset when no matching spec row exists.
-
-## Technical notes
-
-- All work is frontend-only; no schema or RLS changes (admin SELECT policies already exist on both tables).
-- New file: `src/components/forge/ForgeIntakeDetailDrawer.tsx` to keep `ForgeIntake.tsx` lean.
-- Type the fetched rows from `Database["public"]["Tables"][...]["Row"]` in `src/integrations/supabase/types.ts`.
-- No changes to the calculation logic in `AssetFinalReview.tsx`; the drawer is read-only.
+- When a spec exists but a sub-block (HP / RUB / Texture) is `enabled: false`, keep current behavior (block hidden).
+- When no spec is found for an item, show the existing "NO SPECIFICATION RECORDED" panel.
 
 ## Out of scope
 
-- Editing intake data from this view.
-- Advancing workflow steps / sending offers (separate follow-up).
+- No schema, RLS, or calculation-logic changes.
+- No edits to how HP/RUB/Texture/Global values are computed in Final Review — only how they are persisted and matched.
+- No backfill of historical orphan requests created before this fix (older intakes will keep showing "NO SPECIFICATION RECORDED").

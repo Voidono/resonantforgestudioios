@@ -86,6 +86,8 @@ const ForgeIntakeDetailDrawer = ({ requestId, onClose }: Props) => {
   // Pull global intake from any spec's pipeline_config
   const firstPipe = specs[0]?.pipeline_config || {};
   const globalIntake = firstPipe?.global || null;
+  const specsByItem = new Map<string, AnyRow>();
+  specs.forEach((s) => { if (s.asset_item_id) specsByItem.set(s.asset_item_id, s); });
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -141,7 +143,7 @@ const ForgeIntakeDetailDrawer = ({ requestId, onClose }: Props) => {
               ) : (
                 <div className="space-y-4">
                   {items.map((item, idx) => {
-                    const spec = specs[idx] || null;
+                    const spec = specsByItem.get(item.id) ?? specs[idx] ?? null;
                     const pipe = spec?.pipeline_config || {};
                     return (
                       <div key={item.id} className="border border-border rounded-lg bg-card/40 p-5">
