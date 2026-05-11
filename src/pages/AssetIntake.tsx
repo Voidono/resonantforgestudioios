@@ -417,28 +417,35 @@ const AssetIntake = () => {
                     { label: "HIGH POLY", key: "HIGH POLY" },
                     { label: "RETOPO / UV / BAKE", key: "RETOPO / UV" },
                     { label: "TEXTURE", key: "TEXTURING" },
-                    { label: "UNSURE / HELP ME DECIDE", key: "_UNSURE" },
-                    { label: "SIMPLE QUOTE / CONTACT DIRECTLY", key: "_QUOTE" },
                   ].map((stage) => {
-                    const isAction = stage.key === "_QUOTE";
                     const checked = asset.fullProduction || asset.stageToggles[stage.key] || false;
                     return (
                       <div key={stage.key} className="flex items-center justify-between py-3 border-t border-border">
                         <span className="text-xs font-sans font-medium text-muted-foreground">{stage.label}</span>
                         <Switch
                           checked={checked}
-                          disabled={asset.fullProduction && !stage.key.startsWith("_")}
-                          onCheckedChange={(v) => {
-                            if (isAction && v) {
-                              navigate("/contact-terminal");
-                              return;
-                            }
-                            updateAsset({ stageToggles: { ...asset.stageToggles, [stage.key]: v } });
-                          }}
+                          disabled={asset.fullProduction}
+                          onCheckedChange={(v) => updateAsset({ stageToggles: { ...asset.stageToggles, [stage.key]: v } })}
                         />
                       </div>
                     );
                   })}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4 mt-2 border-t border-border">
+                    <button
+                      type="button"
+                      onClick={() => updateAsset({ stageToggles: { ...asset.stageToggles, _UNSURE: !asset.stageToggles["_UNSURE"] } })}
+                      className={`py-2.5 rounded border text-[10px] tracking-[0.12em] uppercase font-sans font-bold transition-colors ${asset.stageToggles["_UNSURE"] ? "border-copper/60 text-copper bg-copper/10" : "border-border text-muted-foreground hover:border-copper/40 hover:text-foreground"}`}
+                    >
+                      UNSURE / HELP ME DECIDE
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/contact-terminal")}
+                      className="py-2.5 rounded border border-border text-[10px] tracking-[0.12em] uppercase font-sans font-bold text-muted-foreground hover:border-copper/40 hover:text-foreground transition-colors"
+                    >
+                      SIMPLE QUOTE / CONTACT DIRECTLY
+                    </button>
+                  </div>
                 </div>
                 {asset.stageToggles["_UNSURE"] && (
                   <p className="text-[9px] tracking-[0.1em] uppercase font-sans text-copper mt-3">⚑ MARKED FOR MANUAL REVIEW BY STUDIO LEAD</p>
