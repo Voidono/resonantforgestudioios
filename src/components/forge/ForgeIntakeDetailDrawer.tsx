@@ -86,6 +86,8 @@ const ForgeIntakeDetailDrawer = ({ requestId, onClose }: Props) => {
   // Pull global intake from any spec's pipeline_config
   const firstPipe = specs[0]?.pipeline_config || {};
   const globalIntake = firstPipe?.global || null;
+  const specsByItem = new Map<string, AnyRow>();
+  specs.forEach((s) => { if (s.asset_item_id) specsByItem.set(s.asset_item_id, s); });
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
