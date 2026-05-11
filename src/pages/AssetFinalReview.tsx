@@ -323,7 +323,8 @@ const AssetFinalReview = () => {
 
       // Insert specification for each asset
       const specs = assets.map((a) => ({
-        request_id: request.id,
+        request_id: requestId,
+        asset_item_id: a.intakeItemId,
         style_direction: styleDirection,
         reference_completeness: referenceCompleteness,
         visual_notes: visualNotes || null,
