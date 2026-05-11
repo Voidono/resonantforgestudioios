@@ -217,6 +217,14 @@ const AssetFinalReview = () => {
   const [textureSetTier, setTextureSetTier] = useState<"1" | "2-3" | "4-6" | "7+" | "UNSURE">("1");
   const [texSets, setTexSets] = useState<TexSet[]>([newTexSet(1)]);
 
+  // Auto-enable HP / RUB / Texture sections based on intake stage selections for the active asset
+  useEffect(() => {
+    const toggles = assets[activeAssetIndex]?.stageToggles || {};
+    setHpEnabled(!!toggles["HIGH POLY"]);
+    setRubEnabled(!!toggles["RETOPO / UV"]);
+    setTextureEnabled(!!toggles["TEXTURING"]);
+  }, [activeAssetIndex, assets]);
+
   const setTexSetCount = (tier: typeof textureSetTier) => {
     setTextureSetTier(tier);
     const target = tier === "1" ? 1 : tier === "2-3" ? 2 : tier === "4-6" ? 4 : tier === "7+" ? 7 : 1;
