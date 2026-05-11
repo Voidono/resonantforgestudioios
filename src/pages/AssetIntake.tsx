@@ -191,7 +191,7 @@ const AssetIntake = () => {
 
       const intakeAssets = assets.map((a) => {
         const match = (insertedItems || []).find((it: any) => it.asset_number === a.id);
-        return { id: a.id, size: a.size, intakeItemId: match?.id ?? null };
+        return { id: a.id, size: a.size, intakeItemId: match?.id ?? null, stageToggles: a.stageToggles };
       });
 
       toast.success("Asset request submitted successfully");

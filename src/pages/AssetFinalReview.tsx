@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
-type IntakeAsset = { id: string; size: string; intakeItemId: string | null };
+type IntakeAsset = { id: string; size: string; intakeItemId: string | null; stageToggles?: Record<string, boolean> };
 
 const AssetFinalReview = () => {
   const navigate = useNavigate();
@@ -216,6 +216,14 @@ const AssetFinalReview = () => {
   const [textureEnabled, setTextureEnabled] = useState(false);
   const [textureSetTier, setTextureSetTier] = useState<"1" | "2-3" | "4-6" | "7+" | "UNSURE">("1");
   const [texSets, setTexSets] = useState<TexSet[]>([newTexSet(1)]);
+
+  // Auto-enable HP / RUB / Texture sections based on intake stage selections for the active asset
+  useEffect(() => {
+    const toggles = assets[activeAssetIndex]?.stageToggles || {};
+    setHpEnabled(!!toggles["HIGH POLY"]);
+    setRubEnabled(!!toggles["RETOPO / UV"]);
+    setTextureEnabled(!!toggles["TEXTURING"]);
+  }, [activeAssetIndex, assets]);
 
   const setTexSetCount = (tier: typeof textureSetTier) => {
     setTextureSetTier(tier);
