@@ -183,13 +183,21 @@ const AssetIntake = () => {
         iterations: a.iterations,
       }));
 
-      const { error: itemsError } = await supabase
+      const { data: insertedItems, error: itemsError } = await supabase
         .from("asset_request_items")
-        .insert(items);
+        .insert(items)
+        .select();
       if (itemsError) throw itemsError;
 
+      const intakeAssets = assets.map((a) => {
+        const match = (insertedItems || []).find((it: any) => it.asset_number === a.id);
+        return { id: a.id, size: a.size, intakeItemId: match?.id ?? null };
+      });
+
       toast.success("Asset request submitted successfully");
-      navigate("/asset-final-review");
+      navigate("/asset-final-review", {
+        state: { requestId: request.id, assets: intakeAssets },
+      });
     } catch (err: any) {
       toast.error(err.message || "Failed to submit asset request");
     } finally {
