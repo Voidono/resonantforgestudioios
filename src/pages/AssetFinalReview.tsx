@@ -1,25 +1,36 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, ArrowRight, PlusSquare, FolderOpen, AtSign, Upload, Copy, Info, HelpCircle, Loader2 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
+type IntakeAsset = { id: string; size: string; intakeItemId: string | null };
+
 const AssetFinalReview = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
-  // Asset selector state
-  const [assets] = useState([
-    { id: "01", size: "S" },
-    { id: "02", size: "M" },
-    { id: "03", size: "L" },
-    { id: "04", size: "S" },
-    { id: "05", size: "S" },
-  ]);
+  const incoming = (location.state || {}) as { requestId?: string; assets?: IntakeAsset[] };
+  const requestId = incoming.requestId ?? null;
+
+  // Asset selector state — sourced from intake submission
+  const [assets] = useState<IntakeAsset[]>(
+    incoming.assets && incoming.assets.length > 0
+      ? incoming.assets
+      : [{ id: "01", size: "S", intakeItemId: null }]
+  );
   const [activeAssetIndex, setActiveAssetIndex] = useState(0);
+
+  useEffect(() => {
+    if (!requestId) {
+      toast.error("Open the intake form first");
+      navigate("/asset-intake");
+    }
+  }, [requestId, navigate]);
 
   // Section 01: Visual Reference & Style Direction
   const [styleDirection, setStyleDirection] = useState<"REALISTIC" | "STYLIZED">("REALISTIC");
