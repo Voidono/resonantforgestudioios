@@ -274,15 +274,13 @@ const AssetFinalReview = () => {
       navigate("/auth");
       return;
     }
+    if (!requestId) {
+      toast.error("Missing intake reference");
+      navigate("/asset-intake");
+      return;
+    }
     setSubmitting(true);
     try {
-      // Create asset request first
-      const { data: request, error: reqError } = await supabase
-        .from("asset_requests")
-        .insert({ user_id: user.id })
-        .select()
-        .single();
-      if (reqError) throw reqError;
 
       // Build extended pipeline config with all calculator + intake data
       const extPipelineConfig = {
