@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import studioLogo from "@/assets/studio-logo.png";
 
-type IntakeAsset = { id: string; size: string; intakeItemId: string | null };
+type IntakeAsset = { id: string; size: string; intakeItemId: string | null; stageToggles?: Record<string, boolean> };
 
 const AssetFinalReview = () => {
   const navigate = useNavigate();
