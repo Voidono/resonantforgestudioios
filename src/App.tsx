@@ -43,7 +43,8 @@ const App = () => (
         <AuthProvider>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/principles" element={<Principles />} />
             <Route path="/faq" element={<FAQ />} />

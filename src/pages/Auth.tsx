@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,11 +23,13 @@ const Auth = () => {
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user) navigate("/dashboard");
-  }, [user, navigate]);
+    if (user) navigate(redirectTo);
+  }, [user, navigate, redirectTo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast({ title: "Session initialized.", description: "Welcome back, operator." });
-      navigate("/dashboard");
+      navigate(redirectTo);
     } catch (error: any) {
       toast({ title: "Access denied", description: error.message, variant: "destructive" });
     } finally {

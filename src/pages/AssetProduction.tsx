@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import Footer from "@/components/Footer";
 import { ArrowLeft, ArrowRight, Settings, ChevronDown, PlusSquare, FolderOpen, AtSign, BarChart3, Layers } from "lucide-react";
 import { useState } from "react";
@@ -36,6 +37,7 @@ const milestones = [
 
 const AssetProduction = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -209,7 +211,11 @@ const AssetProduction = () => {
           <div className="lg:col-span-2 flex flex-col justify-end gap-6">
             {/* CTA Button */}
             <button
-              onClick={() => navigate("/asset-classification")}
+              onClick={() =>
+                user
+                  ? navigate("/asset-classification")
+                  : navigate("/auth?redirect=/asset-classification")
+              }
               className="w-full py-5 rounded-lg text-sm md:text-base tracking-[0.15em] uppercase font-sans font-bold flex items-center justify-center gap-3 transition-opacity hover:opacity-90"
               style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
             >
