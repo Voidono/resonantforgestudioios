@@ -46,6 +46,9 @@ interface AssetData {
   workedBefore: boolean | null;
   studioCode: string;
   requestedArtist: string;
+  studioName: string;
+  contactName: string;
+  contactEmail: string;
   projectDescriptor: string;
   selectedCategory: string | null;
   projectDescription: string;
