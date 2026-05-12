@@ -46,6 +46,9 @@ interface AssetData {
   workedBefore: boolean | null;
   studioCode: string;
   requestedArtist: string;
+  studioName: string;
+  contactName: string;
+  contactEmail: string;
   projectDescriptor: string;
   selectedCategory: string | null;
   projectDescription: string;
@@ -65,6 +68,9 @@ const createDefaultAsset = (id: string, size: AssetSize): AssetData => ({
   workedBefore: null,
   studioCode: "",
   requestedArtist: "",
+  studioName: "",
+  contactName: "",
+  contactEmail: "",
   projectDescriptor: "",
   selectedCategory: null,
   projectDescription: "",
@@ -120,8 +126,13 @@ const AssetIntake = () => {
       const assetErrors: string[] = [];
       if (!a.projectDescriptor.trim()) assetErrors.push("Project Descriptor is required");
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
-      if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
       if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
+      if (a.workedBefore === true && !a.studioCode.trim()) assetErrors.push("Studio Code is required");
+      if (a.workedBefore === false) {
+        if (!a.studioName.trim()) assetErrors.push("Studio Name is required");
+        if (!a.contactName.trim()) assetErrors.push("Point of Contact Name is required");
+        if (!a.contactEmail.trim()) assetErrors.push("Contact Email is required");
+      }
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
@@ -147,7 +158,9 @@ const AssetIntake = () => {
       // Derive project name and client name from the first asset's data
       const firstAsset = assets[0];
       const projectName = firstAsset?.projectDescriptor || null;
-      const clientName = firstAsset?.studioCode || null;
+      const clientName = (firstAsset?.workedBefore === false
+        ? firstAsset?.studioName
+        : firstAsset?.studioCode) || null;
 
       const { data: request, error: reqError } = await supabase
         .from("asset_requests")
@@ -171,6 +184,9 @@ const AssetIntake = () => {
         category: a.selectedCategory,
         worked_before: a.workedBefore,
         studio_code: a.studioCode || null,
+        studio_name: a.studioName || null,
+        contact_name: a.contactName || null,
+        contact_email: a.contactEmail || null,
         requested_artist: a.requestedArtist || null,
         project_descriptor: a.projectDescriptor || null,
         project_description: a.projectDescription || null,
@@ -350,17 +366,39 @@ const AssetIntake = () => {
                     ))}
                   </div>
                 </div>
-                <div>
-                  <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "text-destructive" : "text-foreground"}`}>STUDIO NAME SEARCH {validationErrors[asset.id]?.some(e => e.includes("Studio Code")) && <span className="text-destructive">*</span>}</p>
-                  <div className="relative">
-                    <input type="text" value={asset.studioCode} onChange={(e) => { updateAsset({ studioCode: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Studio Code")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Enter Studio Identification Code..." className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                {asset.workedBefore === false ? (
+                  <div className="border border-copper/40 rounded-lg bg-copper/5 p-5 space-y-4">
+                    <p className="text-[10px] tracking-[0.15em] uppercase font-sans font-bold text-copper">STUDIO ONBOARDING</p>
+                    <div>
+                      <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Studio Name")) ? "text-destructive" : "text-foreground"}`}>STUDIO NAME {validationErrors[asset.id]?.some(e => e.includes("Studio Name")) && <span className="text-destructive">*</span>}</p>
+                      <input type="text" value={asset.studioName} onChange={(e) => { updateAsset({ studioName: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Studio Name")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Legal Studio Entity Name" className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Studio Name")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Point of Contact")) ? "text-destructive" : "text-foreground"}`}>POINT OF CONTACT NAME {validationErrors[asset.id]?.some(e => e.includes("Point of Contact")) && <span className="text-destructive">*</span>}</p>
+                        <input type="text" value={asset.contactName} onChange={(e) => { updateAsset({ contactName: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Point of Contact")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Full Legal Name" className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Point of Contact")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
+                      </div>
+                      <div>
+                        <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Contact Email")) ? "text-destructive" : "text-foreground"}`}>CONTACT EMAIL {validationErrors[asset.id]?.some(e => e.includes("Contact Email")) && <span className="text-destructive">*</span>}</p>
+                        <input type="email" value={asset.contactEmail} onChange={(e) => { updateAsset({ contactEmail: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Contact Email")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="official@studio.com" className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Contact Email")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 text-copper">REQUESTED ARTIST(S) [OPTIONAL]</p>
-                  <input type="text" value={asset.requestedArtist} onChange={(e) => updateAsset({ requestedArtist: e.target.value })} placeholder="Enter specific personnel requested for this engagement..." className="w-full bg-background border border-border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-copper/50" />
-                </div>
+                ) : (
+                  <>
+                    <div>
+                      <p className={`text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "text-destructive" : "text-foreground"}`}>STUDIO NAME SEARCH {validationErrors[asset.id]?.some(e => e.includes("Studio Code")) && <span className="text-destructive">*</span>}</p>
+                      <div className="relative">
+                        <input type="text" value={asset.studioCode} onChange={(e) => { updateAsset({ studioCode: e.target.value }); if (e.target.value.trim()) setValidationErrors(prev => { const next = { ...prev }; if (next[asset.id]) { next[asset.id] = next[asset.id].filter(er => !er.includes("Studio Code")); if (next[asset.id].length === 0) delete next[asset.id]; } return next; }); }} placeholder="Enter Studio Identification Code..." className={`w-full bg-background border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none ${validationErrors[asset.id]?.some(e => e.includes("Studio Code")) ? "border-destructive focus:border-destructive" : "border-border focus:border-copper/50"}`} />
+                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] tracking-[0.1em] uppercase font-sans font-bold mb-2 text-copper">REQUESTED ARTIST(S) [OPTIONAL]</p>
+                      <input type="text" value={asset.requestedArtist} onChange={(e) => updateAsset({ requestedArtist: e.target.value })} placeholder="Enter specific personnel requested for this engagement..." className="w-full bg-background border border-border rounded px-4 py-3 text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-copper/50" />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

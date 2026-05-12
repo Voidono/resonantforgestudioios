@@ -180,9 +180,19 @@ const ForgeIntakeDetailDrawer = ({ requestId, onClose }: Props) => {
                         {/* Intake item fields */}
                         <SectionHead num="01" title="CLIENT INTAKE" />
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          <Field label="STUDIO CODE" value={item.studio_code} />
-                          <Field label="REQUESTED ARTIST" value={item.requested_artist} />
                           <Field label="WORKED BEFORE" value={item.worked_before} />
+                          {item.worked_before === false ? (
+                            <>
+                              <Field label="STUDIO NAME" value={item.studio_name} />
+                              <Field label="POINT OF CONTACT" value={item.contact_name} />
+                              <Field label="CONTACT EMAIL" value={item.contact_email} />
+                            </>
+                          ) : (
+                            <>
+                              <Field label="STUDIO CODE" value={item.studio_code} />
+                              <Field label="REQUESTED ARTIST" value={item.requested_artist} />
+                            </>
+                          )}
                           <Field label="PROJECT DESCRIPTOR" value={item.project_descriptor} />
                           <Field label="ITERATIONS" value={item.iterations} />
                           <Field label="DESCRIPTION" value={item.project_description} />

@@ -19,6 +19,8 @@ export type Database = {
           animation: boolean | null
           asset_number: string
           category: string | null
+          contact_email: string | null
+          contact_name: string | null
           created_at: string
           full_production: boolean | null
           id: string
@@ -32,6 +34,7 @@ export type Database = {
           size: string
           stage_toggles: Json | null
           studio_code: string | null
+          studio_name: string | null
           vfx: boolean | null
           worked_before: boolean | null
         }
@@ -39,6 +42,8 @@ export type Database = {
           animation?: boolean | null
           asset_number: string
           category?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
           created_at?: string
           full_production?: boolean | null
           id?: string
@@ -52,6 +57,7 @@ export type Database = {
           size: string
           stage_toggles?: Json | null
           studio_code?: string | null
+          studio_name?: string | null
           vfx?: boolean | null
           worked_before?: boolean | null
         }
@@ -59,6 +65,8 @@ export type Database = {
           animation?: boolean | null
           asset_number?: string
           category?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
           created_at?: string
           full_production?: boolean | null
           id?: string
@@ -72,6 +80,7 @@ export type Database = {
           size?: string
           stage_toggles?: Json | null
           studio_code?: string | null
+          studio_name?: string | null
           vfx?: boolean | null
           worked_before?: boolean | null
         }
