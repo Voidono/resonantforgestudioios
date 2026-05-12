@@ -126,8 +126,13 @@ const AssetIntake = () => {
       const assetErrors: string[] = [];
       if (!a.projectDescriptor.trim()) assetErrors.push("Project Descriptor is required");
       if (!a.selectedCategory) assetErrors.push("Asset Category is required");
-      if (!a.studioCode.trim()) assetErrors.push("Studio Code is required");
       if (a.workedBefore === null) assetErrors.push("Please indicate if you've worked with us before");
+      if (a.workedBefore === true && !a.studioCode.trim()) assetErrors.push("Studio Code is required");
+      if (a.workedBefore === false) {
+        if (!a.studioName.trim()) assetErrors.push("Studio Name is required");
+        if (!a.contactName.trim()) assetErrors.push("Point of Contact Name is required");
+        if (!a.contactEmail.trim()) assetErrors.push("Contact Email is required");
+      }
       if (assetErrors.length > 0) errors[a.id] = assetErrors;
     });
     setValidationErrors(errors);
