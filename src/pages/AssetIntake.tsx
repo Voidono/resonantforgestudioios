@@ -158,7 +158,9 @@ const AssetIntake = () => {
       // Derive project name and client name from the first asset's data
       const firstAsset = assets[0];
       const projectName = firstAsset?.projectDescriptor || null;
-      const clientName = firstAsset?.studioCode || null;
+      const clientName = (firstAsset?.workedBefore === false
+        ? firstAsset?.studioName
+        : firstAsset?.studioCode) || null;
 
       const { data: request, error: reqError } = await supabase
         .from("asset_requests")
