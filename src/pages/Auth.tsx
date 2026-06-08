@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
@@ -64,6 +64,55 @@ const Auth = () => {
       toast({ title: "Registration initialized", description: "Verification code transmitted." });
     } catch (error: any) {
       toast({ title: "Registration failed", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifySignup = async () => {
+    if (!email || verificationCode.length !== 6) {
+      toast({ title: "Verification incomplete", description: "Enter the 6-digit code sent to your email.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: verificationCode,
+        type: "signup",
+      });
+
+      if (error) throw error;
+      toast({ title: "Email verified", description: "Your studio account is ready." });
+      navigate(redirectTo);
+    } catch (error: any) {
+      toast({ title: "Verification failed", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      setView("register");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+      toast({ title: "Code resent", description: "A new verification code was sent to your email." });
+    } catch (error: any) {
+      toast({ title: "Resend failed", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -172,8 +221,11 @@ const Auth = () => {
               variant="outline"
               className="w-full h-12 tracking-[0.1em] uppercase text-xs border-border hover:border-primary/50"
               onClick={async () => {
-                const { error } = await lovable.auth.signInWithOAuth("google", {
-                  redirect_uri: window.location.origin,
+                const { error } = await supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: {
+                    redirectTo: window.location.origin,
+                  },
                 });
                 if (error) {
                   toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -311,7 +363,7 @@ const Auth = () => {
             </p>
 
             <div className="flex justify-center mb-6">
-              <InputOTP maxLength={6}>
+              <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode}>
                 <InputOTPGroup className="gap-2">
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <InputOTPSlot
@@ -325,17 +377,21 @@ const Auth = () => {
             </div>
 
             <Button
+              disabled={loading}
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 tracking-[0.15em] uppercase text-sm h-12 font-bold mb-4"
-              onClick={() => {
-                toast({ title: "Check your email", description: "Click the verification link sent to your email to complete registration." });
-              }}
+              onClick={handleVerifySignup}
             >
               <ArrowLeftRight className="w-4 h-4 mr-2" />
-              VERIFY CREDENTIALS
+              {loading ? "VERIFYING..." : "VERIFY CREDENTIALS"}
             </Button>
 
             <div className="flex items-center justify-center gap-6">
-              <button className="flex items-center gap-1.5 text-[11px] text-muted-foreground tracking-[0.1em] uppercase hover:text-foreground">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleResendVerification}
+                className="flex items-center gap-1.5 text-[11px] text-muted-foreground tracking-[0.1em] uppercase hover:text-foreground disabled:opacity-50"
+              >
                 <RefreshCw className="w-3 h-3" /> RESEND CODE
               </button>
               <span className="text-muted-foreground/30">|</span>
