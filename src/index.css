@@ -69,6 +69,12 @@
   }
 }
 
+/* Mobile bottom nav safe area */
+@media (max-width: 767px) {
+  .min-h-screen {
+    padding-bottom: 4rem;
+  }
+}
 
 @layer components {
   .hero-gradient-bg {
