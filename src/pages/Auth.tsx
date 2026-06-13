@@ -79,22 +79,24 @@ const Auth = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-[100svh] bg-background flex flex-col pt-[3.5rem] md:pt-[4.5rem] pb-[3.5rem] md:pb-0">
       <Navbar />
 
-      <div className="flex-1 flex items-center justify-center px-6 py-20">
+      <div className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center px-4 py-4">
+
         {view === "login" && (
-          <div className="relative w-full max-w-md border border-border rounded p-8 bg-card/50">
+          <div className="relative w-full max-w-md border border-border rounded p-5 md:p-6 bg-card/50">
             {cornerDots}
 
-            <h1 className="text-center font-serif font-bold text-xl tracking-wide text-foreground mb-1">
+            <h1 className="text-center font-serif font-bold text-lg md:text-xl tracking-wide text-foreground mb-1">
               STUDIO ACCESS //
             </h1>
-            <p className="text-center font-serif font-bold text-xl tracking-wide text-foreground mb-8">
+            <p className="text-center font-serif font-bold text-lg md:text-xl tracking-wide text-foreground mb-5">
               AUTHENTICATION REQUIRED
             </p>
 
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-3">
+
               <div className="space-y-2">
                 <label className="text-muted-foreground text-[11px] tracking-[0.2em] uppercase font-medium">
                   OPERATOR_ID

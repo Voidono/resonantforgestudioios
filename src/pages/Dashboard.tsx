@@ -1,33 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import { Settings, LayoutGrid, Sparkles } from "lucide-react";
-import Footer from "@/components/Footer";
+import { Settings, LayoutGrid, Sparkles, ArrowRight } from "lucide-react";
+import PageShell from "@/components/PageShell";
 
 const modules = [
   {
     icon: Settings,
     title: "BUSINESS",
-    description:
-      "Studio infrastructure and operating systems designed to make the B2B side of game development more honest, legible, and enforceable.",
-    status: "OP_STATUS: NOMINAL",
-    button: "INITIALIZE WORKSPACE",
+    blurb: "Studio infrastructure built to make B2B legible and enforceable.",
     route: "/transaction",
   },
   {
     icon: LayoutGrid,
     title: "DEVELOPERS",
-    description:
-      "A mutually visible network of developers we support and who choose to stand behind the studio through shared standards and work.",
-    status: "CORE_AUTH: GRANTED",
-    button: "FORGE INTEGRATION",
+    blurb: "A visible network of developers backing shared standards.",
     route: "/developer-hub",
   },
   {
     icon: Sparkles,
     title: "COMMUNITY",
-    description:
-      "Where our games take shape in the open. Sharing progress, art, and direction as the studio builds. Decisions made collectively are documented, showing the path chosen.",
-    status: "NET_SYNC: ACTIVE",
-    button: "ACCESS NEXUS",
+    blurb: "Where our games take shape in the open. Decisions, documented.",
     route: "/community",
   },
 ];
@@ -36,139 +27,70 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Hero */}
-      <section className="pt-28 md:pt-36 pb-12 px-6 text-center relative overflow-hidden">
-        {/* Radial glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 40% at 50% 20%, hsl(var(--copper) / 0.12), transparent 70%)",
-          }}
-        />
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-8 md:w-16" style={{ backgroundColor: "hsl(var(--copper))" }} />
-            <span
-              className="text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-medium"
-              style={{ color: "hsl(var(--copper))" }}
-            >
-              SYSTEM ONLINE // FORGE CORE ACTIVE
+    <PageShell>
+      <div className="flex-1 min-h-0 flex flex-col justify-center gap-[var(--sp-section)] py-[var(--sp-section)]">
+        {/* Hero */}
+        <header className="text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="h-px w-8 md:w-12 bg-copper" />
+            <span className="text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-medium text-copper">
+              FORGE CORE ACTIVE
             </span>
-            <div className="h-px w-8 md:w-16" style={{ backgroundColor: "hsl(var(--copper))" }} />
+            <div className="h-px w-8 md:w-12 bg-copper" />
           </div>
-
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-wider text-foreground mb-4">
+          <h1
+            className="font-serif font-bold tracking-wider text-foreground"
+            style={{ fontSize: "var(--fs-display)", lineHeight: 1.05 }}
+          >
             RESONANT FORGE STUDIOS
           </h1>
-
           <p
-            className="text-sm md:text-base tracking-[0.1em] font-sans mb-8"
-            style={{ color: "hsl(var(--copper))" }}
+            className="mt-2 tracking-[0.1em] text-copper"
+            style={{ fontSize: "var(--fs-body)" }}
           >
             A studio built around legible decisions.
           </p>
+        </header>
 
-          <button
-            onClick={() => navigate("/under-construction")}
-            className="inline-flex items-center gap-2 px-6 py-3 text-xs tracking-[0.15em] uppercase font-sans border border-border rounded hover:border-copper/40 text-foreground transition-colors"
-          >
-            <LayoutGrid className="w-4 h-4" style={{ color: "hsl(var(--copper))" }} />
-            REF_005_UPDATED_DESCR.MAP
-          </button>
-        </div>
-      </section>
-
-      {/* OUR GOAL */}
-      <section className="px-6 pb-16">
-        <div className="relative max-w-3xl mx-auto border border-border rounded-lg bg-card/60 backdrop-blur-sm p-10 md:p-14 text-center">
-          <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-          <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-          <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-          <div className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-
-          <h2 className="text-2xl md:text-3xl font-serif font-bold tracking-wider text-foreground mb-3">
-            OUR GOAL
-          </h2>
-          <div className="h-0.5 w-10 mx-auto mb-6" style={{ backgroundColor: "hsl(var(--copper))" }} />
-          <p className="text-muted-foreground font-sans leading-relaxed text-sm md:text-base max-w-xl mx-auto mb-8">
-            To build a studio that makes creative, technical, and business decisions explicit, accountable, and structurally sound as they scale.
-          </p>
-          <button
-            onClick={() => navigate("/principles")}
-            className="px-8 py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium rounded transition-colors"
-            style={{ backgroundColor: "hsl(var(--copper))", color: "hsl(var(--background))" }}
-          >
-            VIEW STUDIO MISSION
-          </button>
-        </div>
-      </section>
-
-      {/* Module Cards */}
-      <section className="px-6 pb-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Module Cards — single row, viewport-fit */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-[var(--sp-gap)]">
           {modules.map((mod) => (
-            <div
+            <button
               key={mod.title}
-              className="relative border border-border rounded-lg bg-card/60 backdrop-blur-sm p-8 flex flex-col items-center text-center min-h-[380px] justify-between transition-colors hover:border-copper/30"
+              onClick={() => navigate(mod.route)}
+              className="group relative border border-border rounded-lg bg-card/60 backdrop-blur-sm p-5 md:p-6 text-left flex flex-col gap-3 transition-colors hover:border-copper/40 focus:outline-none focus:border-copper"
             >
-              <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-              <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-              <div className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-
-              <div className="flex flex-col items-center">
-                <mod.icon className="w-8 h-8 mb-5 text-muted-foreground" />
-                <h3
-                  className="text-xl md:text-2xl font-serif font-bold tracking-wider mb-2"
-                  style={{ color: "hsl(var(--copper))" }}
-                >
-                  {mod.title}
-                </h3>
-                <div className="h-0.5 w-8 mb-5" style={{ backgroundColor: "hsl(var(--copper))" }} />
-                <p className="text-xs text-muted-foreground leading-relaxed font-sans max-w-xs">
-                  {mod.description}
-                </p>
+              <mod.icon className="w-6 h-6 text-copper" />
+              <h3
+                className="font-serif font-bold tracking-wider text-foreground"
+                style={{ fontSize: "var(--fs-h2)" }}
+              >
+                {mod.title}
+              </h3>
+              <p
+                className="text-muted-foreground leading-relaxed"
+                style={{ fontSize: "var(--fs-small)" }}
+              >
+                {mod.blurb}
+              </p>
+              <div className="mt-auto flex items-center gap-2 text-copper text-[10px] tracking-[0.2em] uppercase">
+                ENTER <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </div>
-
-              <div className="w-full mt-6 space-y-4">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--copper))" }} />
-                  <span
-                    className="text-[10px] tracking-[0.15em] uppercase font-sans font-medium"
-                    style={{ color: "hsl(var(--copper))" }}
-                  >
-                    {mod.status}
-                  </span>
-                </div>
-                <button
-                  onClick={() => navigate(mod.route)}
-                  className="w-full py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium border border-border rounded hover:border-copper/40 text-foreground transition-colors"
-                >
-                  {mod.button}
-                </button>
-              </div>
-            </div>
+            </button>
           ))}
         </div>
-      </section>
 
-      {/* Bottom status */}
-      <section className="mt-auto px-6 py-4 border-t border-border">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-[10px] tracking-[0.2em] uppercase font-sans">
-          <div className="flex items-center gap-4">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--copper))" }} />
-            <span style={{ color: "hsl(var(--copper))" }}>BCO // BOUNDED CLEAR DIRECT</span>
-            <span className="text-muted-foreground">AUTH: 45.4215N // 75.6972W</span>
-          </div>
-          <span className="text-muted-foreground">
-            © 2026 RESONANT FORGE STUDIOS (BCO) // HUB_INTERFACE_v5.0.0
-          </span>
+        {/* Primary CTA */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate("/principles")}
+            className="px-7 py-2.5 text-[11px] tracking-[0.2em] uppercase font-medium rounded transition-colors bg-copper text-background hover:bg-copper/90"
+          >
+            View Studio Mission
+          </button>
         </div>
-      </section>
-    </div>
+      </div>
+    </PageShell>
   );
 };
 
