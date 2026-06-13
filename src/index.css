@@ -88,12 +88,13 @@
 
 
 
-/* Mobile bottom nav safe area */
+/* Mobile bottom nav safe area (legacy pages still using min-h-screen) */
 @media (max-width: 767px) {
-  .min-h-screen {
+  .legacy-min-h-screen {
     padding-bottom: 4rem;
   }
 }
+
 
 @layer components {
   .hero-gradient-bg {
