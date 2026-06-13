@@ -79,10 +79,11 @@ const Auth = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-[100svh] bg-background flex flex-col pt-[3.5rem] md:pt-[4.5rem] pb-[3.5rem] md:pb-0">
       <Navbar />
 
-      <div className="flex-1 flex items-center justify-center px-6 py-20">
+      <div className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center px-4 py-4">
+
         {view === "login" && (
           <div className="relative w-full max-w-md border border-border rounded p-8 bg-card/50">
             {cornerDots}
